@@ -1,0 +1,57 @@
+name: build-push-docker
+run-name: "Build & Push Image to GitHub Container Registry"
+
+# Only run when there is a push from the main branch
+on:
+  push:
+    branches: ["main"]
+
+# Setup environment variables
+env:
+  REGISTRY: "ghcr.io"
+  IMAGE_NAME: "node-app-wd-hw"
+  IMAGE_TAG: 1.0.0
+  IMAGE_TAG_LATEST: "latest"
+  APP_PORT: 3030 # TODO Move this to AWS Parameter Store
+
+jobs:
+  # Build docker image and push it to the GitHub Container Registry
+  # Utilizes the following pre-defined GitHub Actions
+  #   - https://github.com/docker/login-action
+  #   - https://github.com/docker/build-push-action
+  build-push-docker-image:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Login
+        uses: docker/login-action@v3
+        with:
+          registry: ${{ env.REGISTRY }}
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Build and Push
+        uses: docker/build-push-action@v5
+        with:
+          build-args: |
+            APP_PORT=${{ env.APP_PORT }}
+          context: .
+          file: "./build/Dockerfile"
+          labels: |
+            created="TODO"
+            authors="Kunal"
+            documentation="https://github.com/KunalShah21/hello-world-image"
+            source="https://github.com/KunalShah21/hello-world-image"
+            version= ${{ env.IMAGE_TAG }}
+            title="Hello World Node Application"
+            description="Hello world app done for homework"
+            base.name="ubi8/nodejs-18-minimal"
+          push: true
+          sbom: true
+          tags: |
+            ${{ env.IMAGE_NAME }}:${{ env.IMAGE_TAG }}
+            ${{ env.IMAGE_NAME }}:${{ env.IMAGE_TAG_LATEST }}
+
+
+

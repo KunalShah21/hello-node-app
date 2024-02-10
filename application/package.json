@@ -1,0 +1,23 @@
+{
+  "name": "hello-world",
+  "version": "1.0.0",
+  "description": "Hello world application run on Node18",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node src/index.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/KunalShah21/hello-world-image.git#actions-testing"
+  },
+  "author": "Kunal Shah",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/KunalShah21/hello-world-image/issues"
+  },
+  "homepage": "https://github.com/KunalShah21/hello-world-image/tree/actions-testing#readme",
+  "dependencies": {
+    "express": "4.18.2"
+  }
+}
