@@ -1,8 +1,9 @@
 name: build-push-docker
 run-name: "Build & Push Image to GitHub Container Registry"
 
-# Only run when there is a push from the main branch
+# Run when there is a push from the main branch or when manually dispatched
 on:
+  workflow_dispatch:
   push:
     branches: ["main"]
 
