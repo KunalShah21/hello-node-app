@@ -51,8 +51,5 @@ jobs:
           push: true
           provenance: false
           tags: |
-            ${{ env.IMAGE_NAME }}:${{ env.IMAGE_TAG }}
-            ${{ env.IMAGE_NAME }}:${{ env.IMAGE_TAG_LATEST }}
-
-
-
+            ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ env.IMAGE_TAG }}
+            ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ env.IMAGE_TAG_LATEST }}
