@@ -49,6 +49,7 @@ jobs:
             base.name="ubi8/nodejs-18-minimal"
           push: true
           sbom: true
+          provenance: true
           tags: |
             ${{ env.IMAGE_NAME }}:${{ env.IMAGE_TAG }}
             ${{ env.IMAGE_NAME }}:${{ env.IMAGE_TAG_LATEST }}
