@@ -24,6 +24,12 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
+      - name: Set Repo to Lowercase
+        run: |
+          echo "REPO_LC=${REPO,,}" >>${GITHUB_ENV}
+        env:
+          REPO: "${{ github.repository }}"
+
       - name: Login
         uses: docker/login-action@v3
         with:
@@ -50,5 +56,5 @@ jobs:
           push: true
           provenance: false
           tags: |
-            ${{ env.REGISTRY }}/${{ github.repository }}:${{ env.IMAGE_TAG }}
-            ${{ env.REGISTRY }}/${{ github.repository }}:${{ env.IMAGE_TAG_LATEST }}
+            ${{ env.REGISTRY }}/${{ env.REPO_LC }}:${{ env.IMAGE_TAG }}
+            ${{ env.REGISTRY }}/${{ env.REPO_LC }}:${{ env.IMAGE_TAG_LATEST }}
