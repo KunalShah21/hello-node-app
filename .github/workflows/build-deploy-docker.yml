@@ -10,6 +10,7 @@ on:
 # Setup environment variables
 env:
   REGISTRY: "ghcr.io"
+  NAMESPACE: "kshah"
   IMAGE_NAME: "node-app-wd-hw"
   IMAGE_TAG: 1.0.0
   IMAGE_TAG_LATEST: "latest"
@@ -51,5 +52,5 @@ jobs:
           push: true
           provenance: false
           tags: |
-            ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ env.IMAGE_TAG }}
-            ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ env.IMAGE_TAG_LATEST }}
+            ${{ env.REGISTRY }}/${{ env.NAMESPACE }}/${{ env.IMAGE_NAME }}:${{ env.IMAGE_TAG }}
+            ${{ env.REGISTRY }}/${{ env.NAMESPACE }}/${{ env.IMAGE_NAME }}:${{ env.IMAGE_TAG_LATEST }}
