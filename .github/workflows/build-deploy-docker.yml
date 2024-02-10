@@ -10,8 +10,6 @@ on:
 # Setup environment variables
 env:
   REGISTRY: "ghcr.io"
-  NAMESPACE: "kshah"
-  IMAGE_NAME: "node-app-wd-hw"
   IMAGE_TAG: 1.0.0
   IMAGE_TAG_LATEST: "latest"
   APP_PORT: 3030 # TODO Move this to AWS Parameter Store
@@ -52,5 +50,5 @@ jobs:
           push: true
           provenance: false
           tags: |
-            ${{ env.REGISTRY }}/${{ env.NAMESPACE }}/${{ env.IMAGE_NAME }}:${{ env.IMAGE_TAG }}
-            ${{ env.REGISTRY }}/${{ env.NAMESPACE }}/${{ env.IMAGE_NAME }}:${{ env.IMAGE_TAG_LATEST }}
+            ${{ env.REGISTRY }}/${{ github.repository }}:${{ env.IMAGE_TAG }}
+            ${{ env.REGISTRY }}/${{ github.repository }}:${{ env.IMAGE_TAG_LATEST }}
