@@ -23,6 +23,9 @@ import { Key } from "aws-cdk-lib/aws-kms";
 import { Construct } from "constructs";
 import { ManagedPolicy, Role, ServicePrincipal } from "aws-cdk-lib/aws-iam";
 import { Certificate } from "aws-cdk-lib/aws-certificatemanager";
+import { Distribution, OriginProtocolPolicy } from "aws-cdk-lib/aws-cloudfront";
+import { LoadBalancerV2Origin } from "aws-cdk-lib/aws-cloudfront-origins";
+import { Bucket } from "aws-cdk-lib/aws-s3";
 // import * as sqs from 'aws-cdk-lib/aws-sqs';
 
 export class WebHostingStack extends Stack {
@@ -39,9 +42,13 @@ export class WebHostingStack extends Stack {
     const vpcId = Fn.importValue(this.node.tryGetContext("vpc-id-export-name"));
     const cloudwatchKeyArn = Fn.importValue(this.node.tryGetContext("cloudwatch-kms-key-arn-export-name"));
     const certificateArn = Fn.importValue(this.node.tryGetContext("acm-cert-arn-export-name"));
+    const s3AccessLogBucketArn = Fn.importValue(this.node.tryGetContext("s3-access-log-bucket-arn-export-name"));
+
+    // get a reference to the S3 access logs bucket
+    const accessLogBucketRef = Bucket.fromBucketArn(this, "hello-s3-access-log-ref", s3AccessLogBucketArn);
 
     // get a reference to the VPC by vpc id
-    const vpcRef = Vpc.fromLookup(this, "hello-world-vpc-ref", { vpcId });
+    const vpcRef = Vpc.fromLookup(this, "hello-vpc-ref", { vpcId });
 
     // security group for the ALB
     const albSecurityGroup = new SecurityGroup(this, "hello-alb-security-group", {
@@ -86,6 +93,7 @@ export class WebHostingStack extends Stack {
     });
 
     // create a Fargate task definition
+    // alternativley could use ApplicationLoadBalancedFargateService to accomplish the below IaC
     const appTaskDef = new FargateTaskDefinition(this, "hello-app-def", {
       cpu: 256, // using minimal cpu for the basic application, normally this would be fine tuned through analyzing metrics over a period of time
       ephemeralStorageGiB: 1, // using minimal storage
@@ -128,15 +136,18 @@ export class WebHostingStack extends Stack {
     });
 
     // create an Application Load Balancer
-    const alb = new ApplicationLoadBalancer(this, "LB", {
+    const appLoadBalancer = new ApplicationLoadBalancer(this, "hello-alb", {
       vpc: vpcRef,
       internetFacing: true,
       deletionProtection: true,
       securityGroup: albSecurityGroup,
     });
 
+    // enable ALB access logs sent to the account's access log bucket
+    appLoadBalancer.logAccessLogs(accessLogBucketRef, regionContext["alb-access-log-prefix"]);
+
     // add a target group for the ECS cluster with health checks configured to "/" on port 3030 with http
-    const appTargetGroup = new ApplicationTargetGroup(this, "app-target-group", {
+    const appTargetGroup = new ApplicationTargetGroup(this, "hello-app-target-group", {
       healthCheck: {
         enabled: true,
         healthyHttpCodes: "200",
@@ -150,12 +161,30 @@ export class WebHostingStack extends Stack {
       targets: [appService],
     });
 
-    const listener = alb.addListener("hello-alb-listener", {
-      certificates: [Certificate.fromCertificateArn(this, "hello-cert-arn", certificateArn)],
+    // grab ACM cert created from base-infrastructure-stack
+    const acmCertRef = Certificate.fromCertificateArn(this, "hello-cert-ref", certificateArn);
+
+    // add an ALB listener that listens on HTTPS and send straffic to the target group
+    const listener = appLoadBalancer.addListener("hello-alb-listener", {
+      certificates: [acmCertRef],
       defaultTargetGroups: [appTargetGroup],
       open: true,
       port: 443,
-      sslPolicy: SslPolicy.RECOMMENDED_TLS
+      sslPolicy: SslPolicy.RECOMMENDED_TLS,
+    });
+
+    // create a CloudFront distribution for caching the website
+    new Distribution(this, "myDist", {
+      enabled: true,
+      defaultBehavior: {
+        origin: new LoadBalancerV2Origin(appLoadBalancer, {
+          protocolPolicy: OriginProtocolPolicy.HTTPS_ONLY,
+        }),
+      },
+      certificate: acmCertRef,
+      enableLogging: true,
+      logBucket: accessLogBucketRef,
+      logFilePrefix: regionContext["cloudfront-access-log-prefix"]
     });
   }
 }
