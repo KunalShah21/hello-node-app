@@ -15,7 +15,7 @@ const env = process.env.ENVIRONMENT || "dev"
  *  - VPC
  *  - Public and Private Subnets
  *  - ACM Cert
- *  - KMS Keys TODO
+ *  - KMS Keys
  *  - Various Exports
  */
 const baseInfraStack = new BaseInfrastructureStack(app, "BaseInfrastructureStack", env, {
@@ -32,6 +32,7 @@ const baseInfraStack = new BaseInfrastructureStack(app, "BaseInfrastructureStack
  *  - Farget Service 
  *  - Fargate Task Definition
  *  - ALB
+ *  - CloudFront Distribution
  */
 const webHostingStack = new WebHostingStack(app, "WebHostingStack", env, {
   env: {
