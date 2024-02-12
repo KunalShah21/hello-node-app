@@ -63,8 +63,20 @@ export class BaseInfrastructureStack extends Stack {
     // create KMS Key for cloudwatch
     const cloudWatchKey = this.createKMSKey(this, "CloudWatch", globalContext);
 
-    // create KMS key for S3
+    // create KMS key for S3 and ensure it allows services to write logs even though it is encrypted
     const s3Key = this.createKMSKey(this, "S3", globalContext);
+    s3Key.addToResourcePolicy(
+      new PolicyStatement({
+        sid: "Allow access logs to be written",
+        actions: ["kms:GenerateDataKey*"],
+        effect: Effect.ALLOW,
+        principals: [
+          new ServicePrincipal("delivery.logs.amazonaws.com"),
+          new ServicePrincipal("logging.s3.amazonaws.com"),
+        ],
+        resources: ["*"],
+      })
+    );
 
     // create s3 buckets for access logs
     // will transition to S3 IA after 30 days
@@ -86,7 +98,7 @@ export class BaseInfrastructureStack extends Stack {
         },
       ],
     });
-    // add a bucket policy statement that allows AWS to store s3 access logs into the bucket
+    // add a bucket policy statement that allows AWS to store S3 access logs into the bucket
     accessLogBucket.addToResourcePolicy(
       new PolicyStatement({
         actions: ["s3:PutObject"],
@@ -99,8 +111,17 @@ export class BaseInfrastructureStack extends Stack {
     accessLogBucket.addToResourcePolicy(
       new PolicyStatement({
         actions: ["s3:PutObject"],
-        resources: [`${accessLogBucket.bucketArn}/*`],
+        resources: [`${accessLogBucket.bucketArn}/${regionContext["alb-access-log-prefix"]}/*`],
         principals: [new AccountRootPrincipal()],
+      })
+    );
+
+    // add a bucket policy statement that allows AWS to store CloudFront access logs into the bucket
+    accessLogBucket.addToResourcePolicy(
+      new PolicyStatement({
+        actions: ["s3:PutObject"],
+        resources: [`${accessLogBucket.bucketArn}/${regionContext["cloudfront-access-log-prefix"]}/*`],
+        principals: [new ServicePrincipal("delivery.logs.amazonaws.com")],
       })
     );
 
@@ -114,6 +135,12 @@ export class BaseInfrastructureStack extends Stack {
     new CfnOutput(this, "hello-cert-arn-export", {
       exportName: this.node.tryGetContext("acm-cert-arn-export-name"),
       value: certificate.certificateArn,
+    });
+
+    // create a CloudFormation output for the s3 access log bucket arn
+    new CfnOutput(this, "hello-s3-access-log-arn-export", {
+      exportName: this.node.tryGetContext("s3-access-log-bucket-arn-export-name"),
+      value: accessLogBucket.bucketArn,
     });
   }
 
