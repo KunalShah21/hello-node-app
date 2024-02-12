@@ -2,11 +2,13 @@
 if [ -z "$1" ]
   then
     echo "No AWS region supplied"
+    exit 1
 fi
 
 if [ -z "$2" ]
   then
     echo "No AWS profile supplied"
+    exit 1
 fi
 
 echo "Synthesising and deploying with CDK for region: $1 and profile $2 on the AWS DEV environment"
