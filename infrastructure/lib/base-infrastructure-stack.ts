@@ -26,7 +26,7 @@ export class BaseInfrastructureStack extends Stack {
     // allocate 16 IP addresses -> 11 available for use since 5 get taken by AWS
     const vpc = new Vpc(this, "hello-vpc", {
       vpcName: "hello-vpc",
-      ipAddresses: IpAddresses.cidr("192.168.0.0/28"),
+      // ipAddresses: IpAddresses.cidr("192.168.0.0/28"),
       natGateways: 0,
       maxAzs: 3,
       subnetConfiguration: [
