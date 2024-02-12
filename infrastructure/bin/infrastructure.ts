@@ -44,5 +44,3 @@ const webHostingStack = new WebHostingStack(app, "WebHostingStack", env, {
 // Add a tag to all resources in the stacks
 Tags.of(baseInfraStack).add('BusinessLine', 'Murphy');
 Tags.of(webHostingStack).add('BusinessLine', 'Murphy');
-
-// TODO - create script to build docker image locally and run the app

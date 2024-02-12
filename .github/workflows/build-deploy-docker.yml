@@ -12,7 +12,7 @@ env:
   REGISTRY: "ghcr.io"
   IMAGE_TAG: 1.0.0
   IMAGE_TAG_LATEST: "latest"
-  APP_PORT: 3030 # TODO Move this to AWS Parameter Store
+  APP_PORT: 3030
 
 jobs:
   # Build docker image and push it to the GitHub Container Registry
@@ -45,7 +45,6 @@ jobs:
           context: .
           file: "./build/Dockerfile"
           labels: |
-            created="TODO"
             authors="Kunal"
             documentation="https://github.com/KunalShah21/hello-world-image"
             source="https://github.com/KunalShah21/hello-world-image"
