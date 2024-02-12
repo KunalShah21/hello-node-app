@@ -57,18 +57,19 @@
     "@aws-cdk/aws-codepipeline-actions:useNewDefaultBranchForCodeCommitSource": true,
     "@aws-cdk/aws-cloudwatch-actions:changeLambdaPermissionLogicalIdForLambdaAction": true,
 
-    "us-east-1": {
-      "dev": {
-        "api-domain-name": "api.dev.kshah21.com",
-        "hosted-zone-id": ""
-      }
-    },
+    "vpc-id-export-name": "hello-vpc-id-export",
+    "cloudwatch-kms-key-arn-export-name": "hello-cloudwatch-kms-key-arn-export",
+    "acm-cert-arn-export-name": "hello-cert-arn-export",
+    "ecs-task-exec-role-policy-arn": "arn:aws:iam::aws:policy/service-role/AmazonECSTaskExecutionRolePolicy",
+    "image-url": "ghcr.io/kunalshah21/hello-node-app:latest",
 
-    "us-west-1": {
-      "dev": {
-        "api-domain-name": "api.dev.kshah21.com",
-        "hosted-zone-id": ""
-      }
+    "dev": {
+      "api-domain-name": "dev.celeryfinance.com",
+      "hosted-zone-id": "Z0305651MAJXD6KEX7QH",
+      "aws-sso-power-user-arn": "arn:aws:iam::565731953403:role/aws-reserved/sso.amazonaws.com/AWSReservedSSO_AWSPowerUserAccess_7f38aba839a1c714",
+      "us-east-1": {},
+
+      "us-west-1": {}
     }
   }
 }
