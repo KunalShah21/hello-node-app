@@ -58,7 +58,7 @@
     "@aws-cdk/aws-cloudwatch-actions:changeLambdaPermissionLogicalIdForLambdaAction": true,
 
     "vpc-id-export-name": "hello-vpc-id-export",
-    "vpc-tag-name": "hello-vpc",
+    "vpc-tag-name": "hello-vpc-tag",
     "cloudwatch-kms-key-arn-export-name": "hello-cloudwatch-kms-key-arn-export",
     "s3-kms-key-arn-export-name": "hello-s3-kms-key-arn-export",
     "acm-cert-arn-export-name": "hello-cert-arn-export",
@@ -69,17 +69,19 @@
     "image-url": "ghcr.io/kunalshah21/hello-node-app:latest",
 
     "dev": {
+      "account-number": "565731953403",
       "api-domain-name": "dev.celeryfinance.com",
       "hosted-zone-id": "Z0305651MAJXD6KEX7QH",
+      "hosted-zone-name": "celeryfinance.com",
       "aws-sso-power-user-arn": "arn:aws:iam::565731953403:role/aws-reserved/sso.amazonaws.com/AWSReservedSSO_AWSPowerUserAccess_7f38aba839a1c714",
       "us-east-1": {
-        "alb-access-log-prefix": "/alb/us-east-1",
-        "cloudfront-access-log-prefix": "/cloudfront/us-east-1"
+        "alb-access-log-prefix": "alb/us-east-1",
+        "cloudfront-access-log-prefix": "cloudfront/us-east-1"
       },
 
       "us-west-1": {
-        "alb-access-log-prefix": "/alb/us-west-1",
-        "cloudfront-access-log-prefix": "/cloudfront/us-west-1"
+        "alb-access-log-prefix": "alb/us-west-1",
+        "cloudfront-access-log-prefix": "cloudfront/us-west-1"
       }
     }
   }

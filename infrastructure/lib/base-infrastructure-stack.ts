@@ -1,6 +1,6 @@
-import { CfnOutput, Duration, Stack, StackProps, Tags } from "aws-cdk-lib";
+import { CfnOutput, Duration, RemovalPolicy, Stack, StackProps, Tags } from "aws-cdk-lib";
 import { Certificate, CertificateValidation } from "aws-cdk-lib/aws-certificatemanager";
-import { SubnetType, Vpc } from "aws-cdk-lib/aws-ec2";
+import { InterfaceVpcEndpoint, InterfaceVpcEndpointService, IpAddresses, SubnetType, Vpc } from "aws-cdk-lib/aws-ec2";
 import {
   AccountRootPrincipal,
   ArnPrincipal,
@@ -12,7 +12,7 @@ import {
 import { Key } from "aws-cdk-lib/aws-kms";
 import { PublicHostedZone } from "aws-cdk-lib/aws-route53";
 
-import { BlockPublicAccess, Bucket, BucketAccessControl, BucketEncryption, StorageClass } from "aws-cdk-lib/aws-s3";
+import { Bucket, BucketAccessControl, BucketEncryption, ObjectOwnership, StorageClass } from "aws-cdk-lib/aws-s3";
 import { Construct } from "constructs";
 // import * as sqs from 'aws-cdk-lib/aws-sqs';
 
@@ -33,13 +33,13 @@ export class BaseInfrastructureStack extends Stack {
     // allocate 16 IP addresses -> 11 available for use since 5 get taken by AWS
     const vpc = new Vpc(this, "hello-vpc", {
       vpcName: "hello-vpc",
-      // ipAddresses: IpAddresses.cidr("192.168.0.0/28"),
-      natGateways: 0,
+      ipAddresses: IpAddresses.cidr("10.0.0.0/16"),
+      natGateways: 1,
       maxAzs: 3,
       subnetConfiguration: [
         {
           name: "Private Subnet",
-          subnetType: SubnetType.PRIVATE_ISOLATED,
+          subnetType: SubnetType.PRIVATE_WITH_EGRESS,
         },
         {
           name: "Public Subnet",
@@ -55,6 +55,18 @@ export class BaseInfrastructureStack extends Stack {
     // cannot work with a Token (unresolved value)
     //https://github.com/aws/aws-cdk/issues/3600
     Tags.of(vpc).add(this.node.tryGetContext("vpc-tag-name"), "true");
+
+    // create a VPC endpoint for cloudwatch logs to allow private resources to send logs to CW
+    const cloudwatchVpcEndpoint = new InterfaceVpcEndpoint(
+      this,
+      "hello-cw-vpc-endpoint",
+      {
+        vpc,
+        service: new InterfaceVpcEndpointService(
+          `com.amazonaws.${region}.logs`
+        ),
+      }
+    );
 
     // get hosted zone information
     const hostedZoneId = globalContext["hosted-zone-id"];
@@ -102,11 +114,17 @@ export class BaseInfrastructureStack extends Stack {
     // create s3 buckets for access logs
     // will transition to S3 IA after 30 days
     // will transition to Glacier after 90 days
+    // need ACLs to be configured for CloudFront logs
     const accessLogBucket = new Bucket(this, "hello-logging-bucket", {
-      blockPublicAccess: BlockPublicAccess.BLOCK_ALL,
-      accessControl: BucketAccessControl.BUCKET_OWNER_FULL_CONTROL,
-      encryption: BucketEncryption.KMS,
-      encryptionKey: s3Key,
+      blockPublicAccess: {
+        blockPublicAcls: false,
+        ignorePublicAcls: false,
+        restrictPublicBuckets: true,
+        blockPublicPolicy: true
+      },
+      accessControl: BucketAccessControl.LOG_DELIVERY_WRITE,
+      objectOwnership: ObjectOwnership.OBJECT_WRITER,
+      encryption: BucketEncryption.S3_MANAGED, // alb access logs only work with S3 managed SSE
       versioned: false, // access logs do not need to be versioned
       lifecycleRules: [
         {
@@ -118,9 +136,19 @@ export class BaseInfrastructureStack extends Stack {
           ],
         },
       ],
+      removalPolicy: RemovalPolicy.DESTROY
     });
-    // add a bucket policy statement that allows AWS to store S3 access logs into the bucket
+
+    // add a bucket policy statement that allows the account to get and put acls
     accessLogBucket.addToResourcePolicy(
+      new PolicyStatement({
+        actions: ["s3:GetBucketAcl", "s3:PutBucketAcl"],
+        resources: [accessLogBucket.bucketArn],
+        principals: [new AccountRootPrincipal()],
+      })
+    );
+    // add a bucket policy statement that allows AWS to store S3 access logs into the bucket
+   accessLogBucket.addToResourcePolicy(
       new PolicyStatement({
         actions: ["s3:PutObject"],
         resources: [`${accessLogBucket.bucketArn}/*`],
@@ -132,8 +160,8 @@ export class BaseInfrastructureStack extends Stack {
     accessLogBucket.addToResourcePolicy(
       new PolicyStatement({
         actions: ["s3:PutObject"],
-        resources: [`${accessLogBucket.bucketArn}/${regionContext["alb-access-log-prefix"]}/*`],
-        principals: [new AccountRootPrincipal()],
+        resources: [`${accessLogBucket.bucketArn}/${regionContext["alb-access-log-prefix"]}/AWSLogs/${globalContext["account-number"]}/*`],
+        principals: [new ServicePrincipal('logdelivery.elasticloadbalancing.amazonaws.com')],
       })
     );
 
