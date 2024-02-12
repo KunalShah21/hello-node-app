@@ -1,0 +1,1341 @@
+{
+ "Resources": {
+  "hellovpcBBF54E31": {
+   "Type": "AWS::EC2::VPC",
+   "Properties": {
+    "CidrBlock": "10.0.0.0/16",
+    "EnableDnsHostnames": true,
+    "EnableDnsSupport": true,
+    "InstanceTenancy": "default",
+    "Tags": [
+     {
+      "Key": "BusinessLine",
+      "Value": "Murphy"
+     },
+     {
+      "Key": "hello-vpc-tag",
+      "Value": "true"
+     },
+     {
+      "Key": "Name",
+      "Value": "hello-vpc"
+     }
+    ]
+   },
+   "Metadata": {
+    "aws:cdk:path": "BaseInfrastructureStack/hello-vpc/Resource"
+   }
+  },
+  "hellovpcPrivateSubnetSubnet1SubnetFCB7E75E": {
+   "Type": "AWS::EC2::Subnet",
+   "Properties": {
+    "AvailabilityZone": "us-east-1a",
+    "CidrBlock": "10.0.0.0/19",
+    "MapPublicIpOnLaunch": false,
+    "Tags": [
+     {
+      "Key": "aws-cdk:subnet-name",
+      "Value": "Private Subnet"
+     },
+     {
+      "Key": "aws-cdk:subnet-type",
+      "Value": "Private"
+     },
+     {
+      "Key": "BusinessLine",
+      "Value": "Murphy"
+     },
+     {
+      "Key": "hello-vpc-tag",
+      "Value": "true"
+     },
+     {
+      "Key": "Name",
+      "Value": "BaseInfrastructureStack/hello-vpc/Private SubnetSubnet1"
+     }
+    ],
+    "VpcId": {
+     "Ref": "hellovpcBBF54E31"
+    }
+   },
+   "Metadata": {
+    "aws:cdk:path": "BaseInfrastructureStack/hello-vpc/Private SubnetSubnet1/Subnet"
+   }
+  },
+  "hellovpcPrivateSubnetSubnet1RouteTable30BBAE26": {
+   "Type": "AWS::EC2::RouteTable",
+   "Properties": {
+    "Tags": [
+     {
+      "Key": "BusinessLine",
+      "Value": "Murphy"
+     },
+     {
+      "Key": "hello-vpc-tag",
+      "Value": "true"
+     },
+     {
+      "Key": "Name",
+      "Value": "BaseInfrastructureStack/hello-vpc/Private SubnetSubnet1"
+     }
+    ],
+    "VpcId": {
+     "Ref": "hellovpcBBF54E31"
+    }
+   },
+   "Metadata": {
+    "aws:cdk:path": "BaseInfrastructureStack/hello-vpc/Private SubnetSubnet1/RouteTable"
+   }
+  },
+  "hellovpcPrivateSubnetSubnet1RouteTableAssociation285845FC": {
+   "Type": "AWS::EC2::SubnetRouteTableAssociation",
+   "Properties": {
+    "RouteTableId": {
+     "Ref": "hellovpcPrivateSubnetSubnet1RouteTable30BBAE26"
+    },
+    "SubnetId": {
+     "Ref": "hellovpcPrivateSubnetSubnet1SubnetFCB7E75E"
+    }
+   },
+   "Metadata": {
+    "aws:cdk:path": "BaseInfrastructureStack/hello-vpc/Private SubnetSubnet1/RouteTableAssociation"
+   }
+  },
+  "hellovpcPrivateSubnetSubnet1DefaultRoute20EA218B": {
+   "Type": "AWS::EC2::Route",
+   "Properties": {
+    "DestinationCidrBlock": "0.0.0.0/0",
+    "NatGatewayId": {
+     "Ref": "hellovpcPublicSubnetSubnet1NATGatewayD3BDB9B3"
+    },
+    "RouteTableId": {
+     "Ref": "hellovpcPrivateSubnetSubnet1RouteTable30BBAE26"
+    }
+   },
+   "Metadata": {
+    "aws:cdk:path": "BaseInfrastructureStack/hello-vpc/Private SubnetSubnet1/DefaultRoute"
+   }
+  },
+  "hellovpcPrivateSubnetSubnet2Subnet8610FAE9": {
+   "Type": "AWS::EC2::Subnet",
+   "Properties": {
+    "AvailabilityZone": "us-east-1b",
+    "CidrBlock": "10.0.32.0/19",
+    "MapPublicIpOnLaunch": false,
+    "Tags": [
+     {
+      "Key": "aws-cdk:subnet-name",
+      "Value": "Private Subnet"
+     },
+     {
+      "Key": "aws-cdk:subnet-type",
+      "Value": "Private"
+     },
+     {
+      "Key": "BusinessLine",
+      "Value": "Murphy"
+     },
+     {
+      "Key": "hello-vpc-tag",
+      "Value": "true"
+     },
+     {
+      "Key": "Name",
+      "Value": "BaseInfrastructureStack/hello-vpc/Private SubnetSubnet2"
+     }
+    ],
+    "VpcId": {
+     "Ref": "hellovpcBBF54E31"
+    }
+   },
+   "Metadata": {
+    "aws:cdk:path": "BaseInfrastructureStack/hello-vpc/Private SubnetSubnet2/Subnet"
+   }
+  },
+  "hellovpcPrivateSubnetSubnet2RouteTable093C380E": {
+   "Type": "AWS::EC2::RouteTable",
+   "Properties": {
+    "Tags": [
+     {
+      "Key": "BusinessLine",
+      "Value": "Murphy"
+     },
+     {
+      "Key": "hello-vpc-tag",
+      "Value": "true"
+     },
+     {
+      "Key": "Name",
+      "Value": "BaseInfrastructureStack/hello-vpc/Private SubnetSubnet2"
+     }
+    ],
+    "VpcId": {
+     "Ref": "hellovpcBBF54E31"
+    }
+   },
+   "Metadata": {
+    "aws:cdk:path": "BaseInfrastructureStack/hello-vpc/Private SubnetSubnet2/RouteTable"
+   }
+  },
+  "hellovpcPrivateSubnetSubnet2RouteTableAssociation5950BD72": {
+   "Type": "AWS::EC2::SubnetRouteTableAssociation",
+   "Properties": {
+    "RouteTableId": {
+     "Ref": "hellovpcPrivateSubnetSubnet2RouteTable093C380E"
+    },
+    "SubnetId": {
+     "Ref": "hellovpcPrivateSubnetSubnet2Subnet8610FAE9"
+    }
+   },
+   "Metadata": {
+    "aws:cdk:path": "BaseInfrastructureStack/hello-vpc/Private SubnetSubnet2/RouteTableAssociation"
+   }
+  },
+  "hellovpcPrivateSubnetSubnet2DefaultRoute5FD49569": {
+   "Type": "AWS::EC2::Route",
+   "Properties": {
+    "DestinationCidrBlock": "0.0.0.0/0",
+    "NatGatewayId": {
+     "Ref": "hellovpcPublicSubnetSubnet1NATGatewayD3BDB9B3"
+    },
+    "RouteTableId": {
+     "Ref": "hellovpcPrivateSubnetSubnet2RouteTable093C380E"
+    }
+   },
+   "Metadata": {
+    "aws:cdk:path": "BaseInfrastructureStack/hello-vpc/Private SubnetSubnet2/DefaultRoute"
+   }
+  },
+  "hellovpcPrivateSubnetSubnet3SubnetB9CD2B89": {
+   "Type": "AWS::EC2::Subnet",
+   "Properties": {
+    "AvailabilityZone": "us-east-1c",
+    "CidrBlock": "10.0.64.0/19",
+    "MapPublicIpOnLaunch": false,
+    "Tags": [
+     {
+      "Key": "aws-cdk:subnet-name",
+      "Value": "Private Subnet"
+     },
+     {
+      "Key": "aws-cdk:subnet-type",
+      "Value": "Private"
+     },
+     {
+      "Key": "BusinessLine",
+      "Value": "Murphy"
+     },
+     {
+      "Key": "hello-vpc-tag",
+      "Value": "true"
+     },
+     {
+      "Key": "Name",
+      "Value": "BaseInfrastructureStack/hello-vpc/Private SubnetSubnet3"
+     }
+    ],
+    "VpcId": {
+     "Ref": "hellovpcBBF54E31"
+    }
+   },
+   "Metadata": {
+    "aws:cdk:path": "BaseInfrastructureStack/hello-vpc/Private SubnetSubnet3/Subnet"
+   }
+  },
+  "hellovpcPrivateSubnetSubnet3RouteTable09496368": {
+   "Type": "AWS::EC2::RouteTable",
+   "Properties": {
+    "Tags": [
+     {
+      "Key": "BusinessLine",
+      "Value": "Murphy"
+     },
+     {
+      "Key": "hello-vpc-tag",
+      "Value": "true"
+     },
+     {
+      "Key": "Name",
+      "Value": "BaseInfrastructureStack/hello-vpc/Private SubnetSubnet3"
+     }
+    ],
+    "VpcId": {
+     "Ref": "hellovpcBBF54E31"
+    }
+   },
+   "Metadata": {
+    "aws:cdk:path": "BaseInfrastructureStack/hello-vpc/Private SubnetSubnet3/RouteTable"
+   }
+  },
+  "hellovpcPrivateSubnetSubnet3RouteTableAssociation6444CD27": {
+   "Type": "AWS::EC2::SubnetRouteTableAssociation",
+   "Properties": {
+    "RouteTableId": {
+     "Ref": "hellovpcPrivateSubnetSubnet3RouteTable09496368"
+    },
+    "SubnetId": {
+     "Ref": "hellovpcPrivateSubnetSubnet3SubnetB9CD2B89"
+    }
+   },
+   "Metadata": {
+    "aws:cdk:path": "BaseInfrastructureStack/hello-vpc/Private SubnetSubnet3/RouteTableAssociation"
+   }
+  },
+  "hellovpcPrivateSubnetSubnet3DefaultRoute1BA753E6": {
+   "Type": "AWS::EC2::Route",
+   "Properties": {
+    "DestinationCidrBlock": "0.0.0.0/0",
+    "NatGatewayId": {
+     "Ref": "hellovpcPublicSubnetSubnet1NATGatewayD3BDB9B3"
+    },
+    "RouteTableId": {
+     "Ref": "hellovpcPrivateSubnetSubnet3RouteTable09496368"
+    }
+   },
+   "Metadata": {
+    "aws:cdk:path": "BaseInfrastructureStack/hello-vpc/Private SubnetSubnet3/DefaultRoute"
+   }
+  },
+  "hellovpcPublicSubnetSubnet1SubnetFD61C0BB": {
+   "Type": "AWS::EC2::Subnet",
+   "Properties": {
+    "AvailabilityZone": "us-east-1a",
+    "CidrBlock": "10.0.96.0/19",
+    "MapPublicIpOnLaunch": false,
+    "Tags": [
+     {
+      "Key": "aws-cdk:subnet-name",
+      "Value": "Public Subnet"
+     },
+     {
+      "Key": "aws-cdk:subnet-type",
+      "Value": "Public"
+     },
+     {
+      "Key": "BusinessLine",
+      "Value": "Murphy"
+     },
+     {
+      "Key": "hello-vpc-tag",
+      "Value": "true"
+     },
+     {
+      "Key": "Name",
+      "Value": "BaseInfrastructureStack/hello-vpc/Public SubnetSubnet1"
+     }
+    ],
+    "VpcId": {
+     "Ref": "hellovpcBBF54E31"
+    }
+   },
+   "Metadata": {
+    "aws:cdk:path": "BaseInfrastructureStack/hello-vpc/Public SubnetSubnet1/Subnet"
+   }
+  },
+  "hellovpcPublicSubnetSubnet1RouteTableCF324398": {
+   "Type": "AWS::EC2::RouteTable",
+   "Properties": {
+    "Tags": [
+     {
+      "Key": "BusinessLine",
+      "Value": "Murphy"
+     },
+     {
+      "Key": "hello-vpc-tag",
+      "Value": "true"
+     },
+     {
+      "Key": "Name",
+      "Value": "BaseInfrastructureStack/hello-vpc/Public SubnetSubnet1"
+     }
+    ],
+    "VpcId": {
+     "Ref": "hellovpcBBF54E31"
+    }
+   },
+   "Metadata": {
+    "aws:cdk:path": "BaseInfrastructureStack/hello-vpc/Public SubnetSubnet1/RouteTable"
+   }
+  },
+  "hellovpcPublicSubnetSubnet1RouteTableAssociationCD058EB7": {
+   "Type": "AWS::EC2::SubnetRouteTableAssociation",
+   "Properties": {
+    "RouteTableId": {
+     "Ref": "hellovpcPublicSubnetSubnet1RouteTableCF324398"
+    },
+    "SubnetId": {
+     "Ref": "hellovpcPublicSubnetSubnet1SubnetFD61C0BB"
+    }
+   },
+   "Metadata": {
+    "aws:cdk:path": "BaseInfrastructureStack/hello-vpc/Public SubnetSubnet1/RouteTableAssociation"
+   }
+  },
+  "hellovpcPublicSubnetSubnet1DefaultRoute89CD0A42": {
+   "Type": "AWS::EC2::Route",
+   "Properties": {
+    "DestinationCidrBlock": "0.0.0.0/0",
+    "GatewayId": {
+     "Ref": "hellovpcIGW3B8FA606"
+    },
+    "RouteTableId": {
+     "Ref": "hellovpcPublicSubnetSubnet1RouteTableCF324398"
+    }
+   },
+   "DependsOn": [
+    "hellovpcVPCGW50942344"
+   ],
+   "Metadata": {
+    "aws:cdk:path": "BaseInfrastructureStack/hello-vpc/Public SubnetSubnet1/DefaultRoute"
+   }
+  },
+  "hellovpcPublicSubnetSubnet1EIPF274B950": {
+   "Type": "AWS::EC2::EIP",
+   "Properties": {
+    "Domain": "vpc",
+    "Tags": [
+     {
+      "Key": "BusinessLine",
+      "Value": "Murphy"
+     },
+     {
+      "Key": "hello-vpc-tag",
+      "Value": "true"
+     },
+     {
+      "Key": "Name",
+      "Value": "BaseInfrastructureStack/hello-vpc/Public SubnetSubnet1"
+     }
+    ]
+   },
+   "Metadata": {
+    "aws:cdk:path": "BaseInfrastructureStack/hello-vpc/Public SubnetSubnet1/EIP"
+   }
+  },
+  "hellovpcPublicSubnetSubnet1NATGatewayD3BDB9B3": {
+   "Type": "AWS::EC2::NatGateway",
+   "Properties": {
+    "AllocationId": {
+     "Fn::GetAtt": [
+      "hellovpcPublicSubnetSubnet1EIPF274B950",
+      "AllocationId"
+     ]
+    },
+    "SubnetId": {
+     "Ref": "hellovpcPublicSubnetSubnet1SubnetFD61C0BB"
+    },
+    "Tags": [
+     {
+      "Key": "BusinessLine",
+      "Value": "Murphy"
+     },
+     {
+      "Key": "hello-vpc-tag",
+      "Value": "true"
+     },
+     {
+      "Key": "Name",
+      "Value": "BaseInfrastructureStack/hello-vpc/Public SubnetSubnet1"
+     }
+    ]
+   },
+   "DependsOn": [
+    "hellovpcPublicSubnetSubnet1DefaultRoute89CD0A42",
+    "hellovpcPublicSubnetSubnet1RouteTableAssociationCD058EB7"
+   ],
+   "Metadata": {
+    "aws:cdk:path": "BaseInfrastructureStack/hello-vpc/Public SubnetSubnet1/NATGateway"
+   }
+  },
+  "hellovpcPublicSubnetSubnet2SubnetB6887BB1": {
+   "Type": "AWS::EC2::Subnet",
+   "Properties": {
+    "AvailabilityZone": "us-east-1b",
+    "CidrBlock": "10.0.128.0/19",
+    "MapPublicIpOnLaunch": false,
+    "Tags": [
+     {
+      "Key": "aws-cdk:subnet-name",
+      "Value": "Public Subnet"
+     },
+     {
+      "Key": "aws-cdk:subnet-type",
+      "Value": "Public"
+     },
+     {
+      "Key": "BusinessLine",
+      "Value": "Murphy"
+     },
+     {
+      "Key": "hello-vpc-tag",
+      "Value": "true"
+     },
+     {
+      "Key": "Name",
+      "Value": "BaseInfrastructureStack/hello-vpc/Public SubnetSubnet2"
+     }
+    ],
+    "VpcId": {
+     "Ref": "hellovpcBBF54E31"
+    }
+   },
+   "Metadata": {
+    "aws:cdk:path": "BaseInfrastructureStack/hello-vpc/Public SubnetSubnet2/Subnet"
+   }
+  },
+  "hellovpcPublicSubnetSubnet2RouteTableFEB134BE": {
+   "Type": "AWS::EC2::RouteTable",
+   "Properties": {
+    "Tags": [
+     {
+      "Key": "BusinessLine",
+      "Value": "Murphy"
+     },
+     {
+      "Key": "hello-vpc-tag",
+      "Value": "true"
+     },
+     {
+      "Key": "Name",
+      "Value": "BaseInfrastructureStack/hello-vpc/Public SubnetSubnet2"
+     }
+    ],
+    "VpcId": {
+     "Ref": "hellovpcBBF54E31"
+    }
+   },
+   "Metadata": {
+    "aws:cdk:path": "BaseInfrastructureStack/hello-vpc/Public SubnetSubnet2/RouteTable"
+   }
+  },
+  "hellovpcPublicSubnetSubnet2RouteTableAssociation6CDAF169": {
+   "Type": "AWS::EC2::SubnetRouteTableAssociation",
+   "Properties": {
+    "RouteTableId": {
+     "Ref": "hellovpcPublicSubnetSubnet2RouteTableFEB134BE"
+    },
+    "SubnetId": {
+     "Ref": "hellovpcPublicSubnetSubnet2SubnetB6887BB1"
+    }
+   },
+   "Metadata": {
+    "aws:cdk:path": "BaseInfrastructureStack/hello-vpc/Public SubnetSubnet2/RouteTableAssociation"
+   }
+  },
+  "hellovpcPublicSubnetSubnet2DefaultRouteD415A721": {
+   "Type": "AWS::EC2::Route",
+   "Properties": {
+    "DestinationCidrBlock": "0.0.0.0/0",
+    "GatewayId": {
+     "Ref": "hellovpcIGW3B8FA606"
+    },
+    "RouteTableId": {
+     "Ref": "hellovpcPublicSubnetSubnet2RouteTableFEB134BE"
+    }
+   },
+   "DependsOn": [
+    "hellovpcVPCGW50942344"
+   ],
+   "Metadata": {
+    "aws:cdk:path": "BaseInfrastructureStack/hello-vpc/Public SubnetSubnet2/DefaultRoute"
+   }
+  },
+  "hellovpcPublicSubnetSubnet3Subnet852CDB90": {
+   "Type": "AWS::EC2::Subnet",
+   "Properties": {
+    "AvailabilityZone": "us-east-1c",
+    "CidrBlock": "10.0.160.0/19",
+    "MapPublicIpOnLaunch": false,
+    "Tags": [
+     {
+      "Key": "aws-cdk:subnet-name",
+      "Value": "Public Subnet"
+     },
+     {
+      "Key": "aws-cdk:subnet-type",
+      "Value": "Public"
+     },
+     {
+      "Key": "BusinessLine",
+      "Value": "Murphy"
+     },
+     {
+      "Key": "hello-vpc-tag",
+      "Value": "true"
+     },
+     {
+      "Key": "Name",
+      "Value": "BaseInfrastructureStack/hello-vpc/Public SubnetSubnet3"
+     }
+    ],
+    "VpcId": {
+     "Ref": "hellovpcBBF54E31"
+    }
+   },
+   "Metadata": {
+    "aws:cdk:path": "BaseInfrastructureStack/hello-vpc/Public SubnetSubnet3/Subnet"
+   }
+  },
+  "hellovpcPublicSubnetSubnet3RouteTable59DC1327": {
+   "Type": "AWS::EC2::RouteTable",
+   "Properties": {
+    "Tags": [
+     {
+      "Key": "BusinessLine",
+      "Value": "Murphy"
+     },
+     {
+      "Key": "hello-vpc-tag",
+      "Value": "true"
+     },
+     {
+      "Key": "Name",
+      "Value": "BaseInfrastructureStack/hello-vpc/Public SubnetSubnet3"
+     }
+    ],
+    "VpcId": {
+     "Ref": "hellovpcBBF54E31"
+    }
+   },
+   "Metadata": {
+    "aws:cdk:path": "BaseInfrastructureStack/hello-vpc/Public SubnetSubnet3/RouteTable"
+   }
+  },
+  "hellovpcPublicSubnetSubnet3RouteTableAssociationD3E2F67C": {
+   "Type": "AWS::EC2::SubnetRouteTableAssociation",
+   "Properties": {
+    "RouteTableId": {
+     "Ref": "hellovpcPublicSubnetSubnet3RouteTable59DC1327"
+    },
+    "SubnetId": {
+     "Ref": "hellovpcPublicSubnetSubnet3Subnet852CDB90"
+    }
+   },
+   "Metadata": {
+    "aws:cdk:path": "BaseInfrastructureStack/hello-vpc/Public SubnetSubnet3/RouteTableAssociation"
+   }
+  },
+  "hellovpcPublicSubnetSubnet3DefaultRoute0ECA7989": {
+   "Type": "AWS::EC2::Route",
+   "Properties": {
+    "DestinationCidrBlock": "0.0.0.0/0",
+    "GatewayId": {
+     "Ref": "hellovpcIGW3B8FA606"
+    },
+    "RouteTableId": {
+     "Ref": "hellovpcPublicSubnetSubnet3RouteTable59DC1327"
+    }
+   },
+   "DependsOn": [
+    "hellovpcVPCGW50942344"
+   ],
+   "Metadata": {
+    "aws:cdk:path": "BaseInfrastructureStack/hello-vpc/Public SubnetSubnet3/DefaultRoute"
+   }
+  },
+  "hellovpcIGW3B8FA606": {
+   "Type": "AWS::EC2::InternetGateway",
+   "Properties": {
+    "Tags": [
+     {
+      "Key": "BusinessLine",
+      "Value": "Murphy"
+     },
+     {
+      "Key": "hello-vpc-tag",
+      "Value": "true"
+     },
+     {
+      "Key": "Name",
+      "Value": "hello-vpc"
+     }
+    ]
+   },
+   "Metadata": {
+    "aws:cdk:path": "BaseInfrastructureStack/hello-vpc/IGW"
+   }
+  },
+  "hellovpcVPCGW50942344": {
+   "Type": "AWS::EC2::VPCGatewayAttachment",
+   "Properties": {
+    "InternetGatewayId": {
+     "Ref": "hellovpcIGW3B8FA606"
+    },
+    "VpcId": {
+     "Ref": "hellovpcBBF54E31"
+    }
+   },
+   "Metadata": {
+    "aws:cdk:path": "BaseInfrastructureStack/hello-vpc/VPCGW"
+   }
+  },
+  "hellovpcRestrictDefaultSecurityGroupCustomResource3FEAB6B0": {
+   "Type": "Custom::VpcRestrictDefaultSG",
+   "Properties": {
+    "ServiceToken": {
+     "Fn::GetAtt": [
+      "CustomVpcRestrictDefaultSGCustomResourceProviderHandlerDC833E5E",
+      "Arn"
+     ]
+    },
+    "DefaultSecurityGroupId": {
+     "Fn::GetAtt": [
+      "hellovpcBBF54E31",
+      "DefaultSecurityGroup"
+     ]
+    },
+    "Account": "565731953403"
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete",
+   "Metadata": {
+    "aws:cdk:path": "BaseInfrastructureStack/hello-vpc/RestrictDefaultSecurityGroupCustomResource/Default"
+   }
+  },
+  "CustomVpcRestrictDefaultSGCustomResourceProviderRole26592FE0": {
+   "Type": "AWS::IAM::Role",
+   "Properties": {
+    "AssumeRolePolicyDocument": {
+     "Version": "2012-10-17",
+     "Statement": [
+      {
+       "Action": "sts:AssumeRole",
+       "Effect": "Allow",
+       "Principal": {
+        "Service": "lambda.amazonaws.com"
+       }
+      }
+     ]
+    },
+    "ManagedPolicyArns": [
+     {
+      "Fn::Sub": "arn:${AWS::Partition}:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
+     }
+    ],
+    "Policies": [
+     {
+      "PolicyName": "Inline",
+      "PolicyDocument": {
+       "Version": "2012-10-17",
+       "Statement": [
+        {
+         "Effect": "Allow",
+         "Action": [
+          "ec2:AuthorizeSecurityGroupIngress",
+          "ec2:AuthorizeSecurityGroupEgress",
+          "ec2:RevokeSecurityGroupIngress",
+          "ec2:RevokeSecurityGroupEgress"
+         ],
+         "Resource": [
+          {
+           "Fn::Join": [
+            "",
+            [
+             "arn:aws:ec2:us-east-1:565731953403:security-group/",
+             {
+              "Fn::GetAtt": [
+               "hellovpcBBF54E31",
+               "DefaultSecurityGroup"
+              ]
+             }
+            ]
+           ]
+          }
+         ]
+        }
+       ]
+      }
+     }
+    ]
+   },
+   "Metadata": {
+    "aws:cdk:path": "BaseInfrastructureStack/Custom::VpcRestrictDefaultSGCustomResourceProvider/Role"
+   }
+  },
+  "CustomVpcRestrictDefaultSGCustomResourceProviderHandlerDC833E5E": {
+   "Type": "AWS::Lambda::Function",
+   "Properties": {
+    "Code": {
+     "S3Bucket": "cdk-hnb659fds-assets-565731953403-us-east-1",
+     "S3Key": "dd5711540f04e06aa955d7f4862fc04e8cdea464cb590dae91ed2976bb78098e.zip"
+    },
+    "Timeout": 900,
+    "MemorySize": 128,
+    "Handler": "__entrypoint__.handler",
+    "Role": {
+     "Fn::GetAtt": [
+      "CustomVpcRestrictDefaultSGCustomResourceProviderRole26592FE0",
+      "Arn"
+     ]
+    },
+    "Runtime": "nodejs18.x",
+    "Description": "Lambda function for removing all inbound/outbound rules from the VPC default security group"
+   },
+   "DependsOn": [
+    "CustomVpcRestrictDefaultSGCustomResourceProviderRole26592FE0"
+   ],
+   "Metadata": {
+    "aws:cdk:path": "BaseInfrastructureStack/Custom::VpcRestrictDefaultSGCustomResourceProvider/Handler",
+    "aws:asset:path": "asset.dd5711540f04e06aa955d7f4862fc04e8cdea464cb590dae91ed2976bb78098e",
+    "aws:asset:property": "Code"
+   }
+  },
+  "hellocwvpcendpointSecurityGroupEB162010": {
+   "Type": "AWS::EC2::SecurityGroup",
+   "Properties": {
+    "GroupDescription": "BaseInfrastructureStack/hello-cw-vpc-endpoint/SecurityGroup",
+    "SecurityGroupEgress": [
+     {
+      "CidrIp": "0.0.0.0/0",
+      "Description": "Allow all outbound traffic by default",
+      "IpProtocol": "-1"
+     }
+    ],
+    "SecurityGroupIngress": [
+     {
+      "CidrIp": {
+       "Fn::GetAtt": [
+        "hellovpcBBF54E31",
+        "CidrBlock"
+       ]
+      },
+      "Description": {
+       "Fn::Join": [
+        "",
+        [
+         "from ",
+         {
+          "Fn::GetAtt": [
+           "hellovpcBBF54E31",
+           "CidrBlock"
+          ]
+         },
+         ":443"
+        ]
+       ]
+      },
+      "FromPort": 443,
+      "IpProtocol": "tcp",
+      "ToPort": 443
+     }
+    ],
+    "Tags": [
+     {
+      "Key": "BusinessLine",
+      "Value": "Murphy"
+     }
+    ],
+    "VpcId": {
+     "Ref": "hellovpcBBF54E31"
+    }
+   },
+   "Metadata": {
+    "aws:cdk:path": "BaseInfrastructureStack/hello-cw-vpc-endpoint/SecurityGroup/Resource"
+   }
+  },
+  "hellocwvpcendpoint2275A5DA": {
+   "Type": "AWS::EC2::VPCEndpoint",
+   "Properties": {
+    "PrivateDnsEnabled": false,
+    "SecurityGroupIds": [
+     {
+      "Fn::GetAtt": [
+       "hellocwvpcendpointSecurityGroupEB162010",
+       "GroupId"
+      ]
+     }
+    ],
+    "ServiceName": "com.amazonaws.us-east-1.logs",
+    "SubnetIds": [
+     {
+      "Ref": "hellovpcPrivateSubnetSubnet1SubnetFCB7E75E"
+     },
+     {
+      "Ref": "hellovpcPrivateSubnetSubnet2Subnet8610FAE9"
+     },
+     {
+      "Ref": "hellovpcPrivateSubnetSubnet3SubnetB9CD2B89"
+     }
+    ],
+    "VpcEndpointType": "Interface",
+    "VpcId": {
+     "Ref": "hellovpcBBF54E31"
+    }
+   },
+   "Metadata": {
+    "aws:cdk:path": "BaseInfrastructureStack/hello-cw-vpc-endpoint/Resource"
+   }
+  },
+  "helloacmcert0590C1B7": {
+   "Type": "AWS::CertificateManager::Certificate",
+   "Properties": {
+    "DomainName": "dev.celeryfinance.com",
+    "DomainValidationOptions": [
+     {
+      "DomainName": "dev.celeryfinance.com",
+      "HostedZoneId": "Z0305651MAJXD6KEX7QH"
+     }
+    ],
+    "Tags": [
+     {
+      "Key": "BusinessLine",
+      "Value": "Murphy"
+     },
+     {
+      "Key": "Name",
+      "Value": "BaseInfrastructureStack/hello-acm-cert"
+     }
+    ],
+    "ValidationMethod": "DNS"
+   },
+   "Metadata": {
+    "aws:cdk:path": "BaseInfrastructureStack/hello-acm-cert/Resource"
+   }
+  },
+  "helloappcloudwatchkmscmkey8893A84A": {
+   "Type": "AWS::KMS::Key",
+   "Properties": {
+    "Description": "KMS Key for cloudwatch",
+    "EnableKeyRotation": true,
+    "KeyPolicy": {
+     "Statement": [
+      {
+       "Action": "kms:*",
+       "Effect": "Allow",
+       "Principal": {
+        "AWS": "arn:aws:iam::565731953403:root"
+       },
+       "Resource": "*",
+       "Sid": "Enable IAM User Permissions"
+      },
+      {
+       "Action": [
+        "kms:Decrypt",
+        "kms:DescribeKey",
+        "kms:Encrypt",
+        "kms:GenerateDataKey*",
+        "kms:ReEncrypt*"
+       ],
+       "Effect": "Allow",
+       "Principal": {
+        "AWS": [
+         "arn:aws:iam::565731953403:role/aws-reserved/sso.amazonaws.com/AWSReservedSSO_AWSPowerUserAccess_7f38aba839a1c714",
+         "arn:aws:iam::565731953403:root"
+        ]
+       },
+       "Resource": "*",
+       "Sid": "Allow use of the key"
+      },
+      {
+       "Action": [
+        "kms:CreateGrant",
+        "kms:ListGrants",
+        "kms:RevokeGrant"
+       ],
+       "Condition": {
+        "Bool": {
+         "kms:GrantIsForAWSResource": "true"
+        }
+       },
+       "Effect": "Allow",
+       "Principal": {
+        "AWS": [
+         "arn:aws:iam::565731953403:role/aws-reserved/sso.amazonaws.com/AWSReservedSSO_AWSPowerUserAccess_7f38aba839a1c714",
+         "arn:aws:iam::565731953403:root"
+        ]
+       },
+       "Resource": "*",
+       "Sid": "Allow attachment of persistent resources"
+      },
+      {
+       "Action": [
+        "kms:Decrypt*",
+        "kms:Describe*",
+        "kms:Encrypt*",
+        "kms:GenerateDataKey*",
+        "kms:ReEncrypt*"
+       ],
+       "Effect": "Allow",
+       "Principal": {
+        "Service": "logs.us-east-1.amazonaws.com"
+       },
+       "Resource": "*",
+       "Sid": "Allow access logs to be written"
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "Tags": [
+     {
+      "Key": "BusinessLine",
+      "Value": "Murphy"
+     }
+    ]
+   },
+   "UpdateReplacePolicy": "Retain",
+   "DeletionPolicy": "Retain",
+   "Metadata": {
+    "aws:cdk:path": "BaseInfrastructureStack/hello-app-cloudwatch-kms-cm-key/Resource"
+   }
+  },
+  "helloappcloudwatchkmscmkeyAlias3DB1C9E3": {
+   "Type": "AWS::KMS::Alias",
+   "Properties": {
+    "AliasName": "alias/aws-cloudwatch-kms-cm-key",
+    "TargetKeyId": {
+     "Fn::GetAtt": [
+      "helloappcloudwatchkmscmkey8893A84A",
+      "Arn"
+     ]
+    }
+   },
+   "Metadata": {
+    "aws:cdk:path": "BaseInfrastructureStack/hello-app-cloudwatch-kms-cm-key/Alias/Resource"
+   }
+  },
+  "helloapps3kmscmkey93AB66C0": {
+   "Type": "AWS::KMS::Key",
+   "Properties": {
+    "Description": "KMS Key for s3",
+    "EnableKeyRotation": true,
+    "KeyPolicy": {
+     "Statement": [
+      {
+       "Action": "kms:*",
+       "Effect": "Allow",
+       "Principal": {
+        "AWS": "arn:aws:iam::565731953403:root"
+       },
+       "Resource": "*",
+       "Sid": "Enable IAM User Permissions"
+      },
+      {
+       "Action": [
+        "kms:Decrypt",
+        "kms:DescribeKey",
+        "kms:Encrypt",
+        "kms:GenerateDataKey*",
+        "kms:ReEncrypt*"
+       ],
+       "Effect": "Allow",
+       "Principal": {
+        "AWS": [
+         "arn:aws:iam::565731953403:role/aws-reserved/sso.amazonaws.com/AWSReservedSSO_AWSPowerUserAccess_7f38aba839a1c714",
+         "arn:aws:iam::565731953403:root"
+        ]
+       },
+       "Resource": "*",
+       "Sid": "Allow use of the key"
+      },
+      {
+       "Action": [
+        "kms:CreateGrant",
+        "kms:ListGrants",
+        "kms:RevokeGrant"
+       ],
+       "Condition": {
+        "Bool": {
+         "kms:GrantIsForAWSResource": "true"
+        }
+       },
+       "Effect": "Allow",
+       "Principal": {
+        "AWS": [
+         "arn:aws:iam::565731953403:role/aws-reserved/sso.amazonaws.com/AWSReservedSSO_AWSPowerUserAccess_7f38aba839a1c714",
+         "arn:aws:iam::565731953403:root"
+        ]
+       },
+       "Resource": "*",
+       "Sid": "Allow attachment of persistent resources"
+      },
+      {
+       "Action": "kms:GenerateDataKey*",
+       "Effect": "Allow",
+       "Principal": {
+        "Service": [
+         "delivery.logs.amazonaws.com",
+         "logging.s3.amazonaws.com"
+        ]
+       },
+       "Resource": "*",
+       "Sid": "Allow access logs to be written"
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "Tags": [
+     {
+      "Key": "BusinessLine",
+      "Value": "Murphy"
+     }
+    ]
+   },
+   "UpdateReplacePolicy": "Retain",
+   "DeletionPolicy": "Retain",
+   "Metadata": {
+    "aws:cdk:path": "BaseInfrastructureStack/hello-app-s3-kms-cm-key/Resource"
+   }
+  },
+  "helloapps3kmscmkeyAlias1A8509AD": {
+   "Type": "AWS::KMS::Alias",
+   "Properties": {
+    "AliasName": "alias/aws-s3-kms-cm-key",
+    "TargetKeyId": {
+     "Fn::GetAtt": [
+      "helloapps3kmscmkey93AB66C0",
+      "Arn"
+     ]
+    }
+   },
+   "Metadata": {
+    "aws:cdk:path": "BaseInfrastructureStack/hello-app-s3-kms-cm-key/Alias/Resource"
+   }
+  },
+  "hellologgingbucketA5A4012B": {
+   "Type": "AWS::S3::Bucket",
+   "Properties": {
+    "AccessControl": "LogDeliveryWrite",
+    "BucketEncryption": {
+     "ServerSideEncryptionConfiguration": [
+      {
+       "ServerSideEncryptionByDefault": {
+        "SSEAlgorithm": "AES256"
+       }
+      }
+     ]
+    },
+    "LifecycleConfiguration": {
+     "Rules": [
+      {
+       "Id": "Store Access Logs in IA and Glacier",
+       "Status": "Enabled",
+       "Transitions": [
+        {
+         "StorageClass": "STANDARD_IA",
+         "TransitionInDays": 30
+        },
+        {
+         "StorageClass": "GLACIER",
+         "TransitionInDays": 90
+        }
+       ]
+      }
+     ]
+    },
+    "OwnershipControls": {
+     "Rules": [
+      {
+       "ObjectOwnership": "ObjectWriter"
+      }
+     ]
+    },
+    "PublicAccessBlockConfiguration": {
+     "BlockPublicAcls": false,
+     "BlockPublicPolicy": true,
+     "IgnorePublicAcls": false,
+     "RestrictPublicBuckets": true
+    },
+    "Tags": [
+     {
+      "Key": "BusinessLine",
+      "Value": "Murphy"
+     }
+    ]
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete",
+   "Metadata": {
+    "aws:cdk:path": "BaseInfrastructureStack/hello-logging-bucket/Resource"
+   }
+  },
+  "hellologgingbucketPolicy387E800E": {
+   "Type": "AWS::S3::BucketPolicy",
+   "Properties": {
+    "Bucket": {
+     "Ref": "hellologgingbucketA5A4012B"
+    },
+    "PolicyDocument": {
+     "Statement": [
+      {
+       "Action": [
+        "s3:GetBucketAcl",
+        "s3:PutBucketAcl"
+       ],
+       "Effect": "Allow",
+       "Principal": {
+        "AWS": "arn:aws:iam::565731953403:root"
+       },
+       "Resource": {
+        "Fn::GetAtt": [
+         "hellologgingbucketA5A4012B",
+         "Arn"
+        ]
+       }
+      },
+      {
+       "Action": "s3:PutObject",
+       "Effect": "Allow",
+       "Principal": {
+        "Service": "logging.s3.amazonaws.com"
+       },
+       "Resource": {
+        "Fn::Join": [
+         "",
+         [
+          {
+           "Fn::GetAtt": [
+            "hellologgingbucketA5A4012B",
+            "Arn"
+           ]
+          },
+          "/*"
+         ]
+        ]
+       }
+      },
+      {
+       "Action": "s3:PutObject",
+       "Effect": "Allow",
+       "Principal": {
+        "Service": "logdelivery.elasticloadbalancing.amazonaws.com"
+       },
+       "Resource": {
+        "Fn::Join": [
+         "",
+         [
+          {
+           "Fn::GetAtt": [
+            "hellologgingbucketA5A4012B",
+            "Arn"
+           ]
+          },
+          "/alb/us-east-1/AWSLogs/565731953403/*"
+         ]
+        ]
+       }
+      },
+      {
+       "Action": "s3:PutObject",
+       "Effect": "Allow",
+       "Principal": {
+        "Service": "delivery.logs.amazonaws.com"
+       },
+       "Resource": {
+        "Fn::Join": [
+         "",
+         [
+          {
+           "Fn::GetAtt": [
+            "hellologgingbucketA5A4012B",
+            "Arn"
+           ]
+          },
+          "/cloudfront/us-east-1/*"
+         ]
+        ]
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    }
+   },
+   "Metadata": {
+    "aws:cdk:path": "BaseInfrastructureStack/hello-logging-bucket/Policy/Resource"
+   }
+  },
+  "CDKMetadata": {
+   "Type": "AWS::CDK::Metadata",
+   "Properties": {
+    "Analytics": "v2:deflate64:H4sIAAAAAAAA/22RQW/CMAyFf8vuIRtMmnYFhBCatFUwcZ3S1AXTNqkSB4Sq/vc5LVvQtJP9vr46z8lMTmcv8ulBXfxEF9Wkxlx2O1K6Eoy+OtAz2e1bLZal2WdLkTk8K4JdyA1QhKnb2kDwqfIaEk9s7r3VqAit+TWLLOQ16jRitclieVe05kMu6hrVxhA4NtwhTnJTc+KsxwYMicFXKg0cd2WK1iLDHejgkK5rZ0M75PoLeNaPuxcaHGGJmoc3yqgDONktE4v+O9mLqvGye4MhVCzzGpWPYmh64Z9ltwi6Gte7dWPJLK9+TXjUfS+24G1wmg8LnmyTJN/a/58yZ89YgFsoD4IvGohf8IDmEP/5CNQGXs3YAuTJP56nrzK++MkjTlwwhA3I7Vi/AdGJEHsOAgAA"
+   },
+   "Metadata": {
+    "aws:cdk:path": "BaseInfrastructureStack/CDKMetadata/Default"
+   }
+  }
+ },
+ "Outputs": {
+  "helloappcloudwatchkmscmkeyarnexport": {
+   "Value": {
+    "Fn::GetAtt": [
+     "helloappcloudwatchkmscmkey8893A84A",
+     "Arn"
+    ]
+   },
+   "Export": {
+    "Name": "hello-cloudwatch-kms-key-arn-export"
+   }
+  },
+  "helloapps3kmscmkeyarnexport": {
+   "Value": {
+    "Fn::GetAtt": [
+     "helloapps3kmscmkey93AB66C0",
+     "Arn"
+    ]
+   },
+   "Export": {
+    "Name": "hello-s3-kms-key-arn-export"
+   }
+  },
+  "hellovpcidexport": {
+   "Value": {
+    "Ref": "hellovpcBBF54E31"
+   },
+   "Export": {
+    "Name": "hello-vpc-id-export"
+   }
+  },
+  "hellocertarnexport": {
+   "Value": {
+    "Ref": "helloacmcert0590C1B7"
+   },
+   "Export": {
+    "Name": "hello-cert-arn-export"
+   }
+  },
+  "hellos3accesslogarnexport": {
+   "Value": {
+    "Fn::GetAtt": [
+     "hellologgingbucketA5A4012B",
+     "Arn"
+    ]
+   },
+   "Export": {
+    "Name": "hello-s3-access-log-bucket-arn-export"
+   }
+  }
+ },
+ "Parameters": {
+  "BootstrapVersion": {
+   "Type": "AWS::SSM::Parameter::Value<String>",
+   "Default": "/cdk-bootstrap/hnb659fds/version",
+   "Description": "Version of the CDK Bootstrap resources in this environment, automatically retrieved from SSM Parameter Store. [cdk:skip]"
+  }
+ },
+ "Rules": {
+  "CheckBootstrapVersion": {
+   "Assertions": [
+    {
+     "Assert": {
+      "Fn::Not": [
+       {
+        "Fn::Contains": [
+         [
+          "1",
+          "2",
+          "3",
+          "4",
+          "5"
+         ],
+         {
+          "Ref": "BootstrapVersion"
+         }
+        ]
+       }
+      ]
+     },
+     "AssertDescription": "CDK bootstrap stack version 6 required. Please run 'cdk bootstrap' with a recent version of the CDK CLI."
+    }
+   ]
+  }
+ }
+}

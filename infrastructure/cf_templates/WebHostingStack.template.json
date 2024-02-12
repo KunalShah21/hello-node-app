@@ -1,0 +1,621 @@
+{
+ "Resources": {
+  "helloalbsecuritygroupEB8E4ADA": {
+   "Type": "AWS::EC2::SecurityGroup",
+   "Properties": {
+    "GroupDescription": "Security Group for an internet facing ALB",
+    "GroupName": "hello-app-alb-sg",
+    "SecurityGroupEgress": [
+     {
+      "CidrIp": "0.0.0.0/0",
+      "Description": "Allow all outbound traffic by default",
+      "IpProtocol": "-1"
+     }
+    ],
+    "SecurityGroupIngress": [
+     {
+      "CidrIp": "0.0.0.0/0",
+      "Description": "allow all incoming https connections from any ip",
+      "FromPort": 443,
+      "IpProtocol": "tcp",
+      "ToPort": 443
+     }
+    ],
+    "Tags": [
+     {
+      "Key": "BusinessLine",
+      "Value": "Murphy"
+     }
+    ],
+    "VpcId": "vpc-0cf24f44982bd3e77"
+   },
+   "Metadata": {
+    "aws:cdk:path": "WebHostingStack/hello-alb-security-group/Resource"
+   }
+  },
+  "helloecssecuritygroup2D01C5FB": {
+   "Type": "AWS::EC2::SecurityGroup",
+   "Properties": {
+    "GroupDescription": "Security Group for a Fargate cluster",
+    "GroupName": "hello-app-ecs-sg",
+    "SecurityGroupEgress": [
+     {
+      "CidrIp": "0.0.0.0/0",
+      "Description": "Allow all outbound traffic by default",
+      "IpProtocol": "-1"
+     }
+    ],
+    "Tags": [
+     {
+      "Key": "BusinessLine",
+      "Value": "Murphy"
+     }
+    ],
+    "VpcId": "vpc-0cf24f44982bd3e77"
+   },
+   "Metadata": {
+    "aws:cdk:path": "WebHostingStack/hello-ecs-security-group/Resource"
+   }
+  },
+  "helloecssecuritygroupfromWebHostingStackhelloalbsecuritygroupBD6127C4303067F83957": {
+   "Type": "AWS::EC2::SecurityGroupIngress",
+   "Properties": {
+    "Description": "allow inbound traffic from the ALB",
+    "FromPort": 3030,
+    "GroupId": {
+     "Fn::GetAtt": [
+      "helloecssecuritygroup2D01C5FB",
+      "GroupId"
+     ]
+    },
+    "IpProtocol": "tcp",
+    "SourceSecurityGroupId": {
+     "Fn::GetAtt": [
+      "helloalbsecuritygroupEB8E4ADA",
+      "GroupId"
+     ]
+    },
+    "ToPort": 3030
+   },
+   "Metadata": {
+    "aws:cdk:path": "WebHostingStack/hello-ecs-security-group/from WebHostingStackhelloalbsecuritygroupBD6127C4:3030"
+   }
+  },
+  "helloapploggroupED6E8B64": {
+   "Type": "AWS::Logs::LogGroup",
+   "Properties": {
+    "KmsKeyId": {
+     "Fn::ImportValue": "hello-cloudwatch-kms-key-arn-export"
+    },
+    "LogGroupClass": "STANDARD",
+    "LogGroupName": "ecs/container/hello-app",
+    "RetentionInDays": 90,
+    "Tags": [
+     {
+      "Key": "BusinessLine",
+      "Value": "Murphy"
+     }
+    ]
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete",
+   "Metadata": {
+    "aws:cdk:path": "WebHostingStack/hello-app-log-group/Resource"
+   }
+  },
+  "helloecscluster33243F77": {
+   "Type": "AWS::ECS::Cluster",
+   "Properties": {
+    "ClusterName": "hello-app-cluster",
+    "ClusterSettings": [
+     {
+      "Name": "containerInsights",
+      "Value": "enabled"
+     }
+    ],
+    "Tags": [
+     {
+      "Key": "BusinessLine",
+      "Value": "Murphy"
+     }
+    ]
+   },
+   "Metadata": {
+    "aws:cdk:path": "WebHostingStack/hello-ecs-cluster/Resource"
+   }
+  },
+  "hellotaskexecrole69335ED6": {
+   "Type": "AWS::IAM::Role",
+   "Properties": {
+    "AssumeRolePolicyDocument": {
+     "Statement": [
+      {
+       "Action": "sts:AssumeRole",
+       "Effect": "Allow",
+       "Principal": {
+        "Service": "ecs-tasks.amazonaws.com"
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "ManagedPolicyArns": [
+     "arn:aws:iam::aws:policy/service-role/AmazonECSTaskExecutionRolePolicy"
+    ],
+    "Tags": [
+     {
+      "Key": "BusinessLine",
+      "Value": "Murphy"
+     }
+    ]
+   },
+   "Metadata": {
+    "aws:cdk:path": "WebHostingStack/hello-task-exec-role/Resource"
+   }
+  },
+  "hellotaskexecroleDefaultPolicy02C2930C": {
+   "Type": "AWS::IAM::Policy",
+   "Properties": {
+    "PolicyDocument": {
+     "Statement": [
+      {
+       "Action": [
+        "logs:CreateLogStream",
+        "logs:PutLogEvents"
+       ],
+       "Effect": "Allow",
+       "Resource": {
+        "Fn::GetAtt": [
+         "helloapploggroupED6E8B64",
+         "Arn"
+        ]
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "PolicyName": "hellotaskexecroleDefaultPolicy02C2930C",
+    "Roles": [
+     {
+      "Ref": "hellotaskexecrole69335ED6"
+     }
+    ]
+   },
+   "Metadata": {
+    "aws:cdk:path": "WebHostingStack/hello-task-exec-role/DefaultPolicy/Resource"
+   }
+  },
+  "helloappdefTaskRole7FA076FE": {
+   "Type": "AWS::IAM::Role",
+   "Properties": {
+    "AssumeRolePolicyDocument": {
+     "Statement": [
+      {
+       "Action": "sts:AssumeRole",
+       "Effect": "Allow",
+       "Principal": {
+        "Service": "ecs-tasks.amazonaws.com"
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "Tags": [
+     {
+      "Key": "BusinessLine",
+      "Value": "Murphy"
+     }
+    ]
+   },
+   "Metadata": {
+    "aws:cdk:path": "WebHostingStack/hello-app-def/TaskRole/Resource"
+   }
+  },
+  "helloappdefA3A3F43C": {
+   "Type": "AWS::ECS::TaskDefinition",
+   "Properties": {
+    "ContainerDefinitions": [
+     {
+      "Essential": true,
+      "HealthCheck": {
+       "Command": [
+        "CMD-SHELL",
+        "curl -f http://localhost:3030/ || exit 1"
+       ],
+       "Interval": 30,
+       "Retries": 3,
+       "StartPeriod": 60,
+       "Timeout": 10
+      },
+      "Image": "ghcr.io/kunalshah21/hello-node-app:latest",
+      "LogConfiguration": {
+       "LogDriver": "awslogs",
+       "Options": {
+        "awslogs-group": {
+         "Ref": "helloapploggroupED6E8B64"
+        },
+        "awslogs-stream-prefix": "app/hello-app-container/hello",
+        "awslogs-region": "us-east-1",
+        "mode": "non-blocking"
+       }
+      },
+      "Name": "hello-app-container",
+      "PortMappings": [
+       {
+        "AppProtocol": "http",
+        "ContainerPort": 3030,
+        "HostPort": 3030,
+        "Name": "hello-app-port-mapping",
+        "Protocol": "tcp"
+       }
+      ]
+     }
+    ],
+    "Cpu": "256",
+    "EphemeralStorage": {
+     "SizeInGiB": 21
+    },
+    "ExecutionRoleArn": {
+     "Fn::GetAtt": [
+      "hellotaskexecrole69335ED6",
+      "Arn"
+     ]
+    },
+    "Family": "WebHostingStackhelloappdef5EEB5525",
+    "Memory": "512",
+    "NetworkMode": "awsvpc",
+    "RequiresCompatibilities": [
+     "FARGATE"
+    ],
+    "RuntimePlatform": {
+     "CpuArchitecture": "X86_64",
+     "OperatingSystemFamily": "LINUX"
+    },
+    "Tags": [
+     {
+      "Key": "BusinessLine",
+      "Value": "Murphy"
+     }
+    ],
+    "TaskRoleArn": {
+     "Fn::GetAtt": [
+      "helloappdefTaskRole7FA076FE",
+      "Arn"
+     ]
+    }
+   },
+   "Metadata": {
+    "aws:cdk:path": "WebHostingStack/hello-app-def/Resource"
+   }
+  },
+  "hellofargateserviceService606D5361": {
+   "Type": "AWS::ECS::Service",
+   "Properties": {
+    "Cluster": {
+     "Ref": "helloecscluster33243F77"
+    },
+    "DeploymentConfiguration": {
+     "Alarms": {
+      "AlarmNames": [],
+      "Enable": false,
+      "Rollback": false
+     },
+     "MaximumPercent": 200,
+     "MinimumHealthyPercent": 50
+    },
+    "DesiredCount": 1,
+    "EnableECSManagedTags": false,
+    "HealthCheckGracePeriodSeconds": 60,
+    "LaunchType": "FARGATE",
+    "LoadBalancers": [
+     {
+      "ContainerName": "hello-app-container",
+      "ContainerPort": 3030,
+      "TargetGroupArn": {
+       "Ref": "helloapptargetgroupE60DB7A7"
+      }
+     }
+    ],
+    "NetworkConfiguration": {
+     "AwsvpcConfiguration": {
+      "AssignPublicIp": "DISABLED",
+      "SecurityGroups": [
+       {
+        "Fn::GetAtt": [
+         "helloecssecuritygroup2D01C5FB",
+         "GroupId"
+        ]
+       }
+      ],
+      "Subnets": [
+       "subnet-01b2edcb6e1c6cf6a",
+       "subnet-03233275cd0eb3891",
+       "subnet-0372cc1cf90f61bfe"
+      ]
+     }
+    },
+    "ServiceName": "hello-app-service",
+    "Tags": [
+     {
+      "Key": "BusinessLine",
+      "Value": "Murphy"
+     }
+    ],
+    "TaskDefinition": {
+     "Ref": "helloappdefA3A3F43C"
+    }
+   },
+   "DependsOn": [
+    "helloalbhelloalblistener6FBED7C3",
+    "helloappdefTaskRole7FA076FE"
+   ],
+   "Metadata": {
+    "aws:cdk:path": "WebHostingStack/hello-fargate-service/Service"
+   }
+  },
+  "helloalb87F56C9C": {
+   "Type": "AWS::ElasticLoadBalancingV2::LoadBalancer",
+   "Properties": {
+    "LoadBalancerAttributes": [
+     {
+      "Key": "deletion_protection.enabled",
+      "Value": "true"
+     }
+    ],
+    "Scheme": "internet-facing",
+    "SecurityGroups": [
+     {
+      "Fn::GetAtt": [
+       "helloalbsecuritygroupEB8E4ADA",
+       "GroupId"
+      ]
+     }
+    ],
+    "Subnets": [
+     "subnet-0cdbf5c41e67de1e3",
+     "subnet-08b59294bf0837c6f",
+     "subnet-00a7fd282152402dd"
+    ],
+    "Tags": [
+     {
+      "Key": "BusinessLine",
+      "Value": "Murphy"
+     }
+    ],
+    "Type": "application"
+   },
+   "Metadata": {
+    "aws:cdk:path": "WebHostingStack/hello-alb/Resource"
+   }
+  },
+  "helloalbhelloalblistener6FBED7C3": {
+   "Type": "AWS::ElasticLoadBalancingV2::Listener",
+   "Properties": {
+    "Certificates": [
+     {
+      "CertificateArn": {
+       "Fn::ImportValue": "hello-cert-arn-export"
+      }
+     }
+    ],
+    "DefaultActions": [
+     {
+      "TargetGroupArn": {
+       "Ref": "helloapptargetgroupE60DB7A7"
+      },
+      "Type": "forward"
+     }
+    ],
+    "LoadBalancerArn": {
+     "Ref": "helloalb87F56C9C"
+    },
+    "Port": 443,
+    "Protocol": "HTTPS",
+    "SslPolicy": "ELBSecurityPolicy-TLS13-1-2-2021-06"
+   },
+   "Metadata": {
+    "aws:cdk:path": "WebHostingStack/hello-alb/hello-alb-listener/Resource"
+   }
+  },
+  "helloapptargetgroupE60DB7A7": {
+   "Type": "AWS::ElasticLoadBalancingV2::TargetGroup",
+   "Properties": {
+    "HealthCheckEnabled": true,
+    "HealthCheckPath": "/",
+    "HealthCheckPort": "3030",
+    "HealthCheckProtocol": "HTTP",
+    "HealthCheckTimeoutSeconds": 10,
+    "Matcher": {
+     "HttpCode": "200"
+    },
+    "Port": 3030,
+    "Protocol": "HTTP",
+    "Tags": [
+     {
+      "Key": "BusinessLine",
+      "Value": "Murphy"
+     }
+    ],
+    "TargetGroupAttributes": [
+     {
+      "Key": "stickiness.enabled",
+      "Value": "false"
+     }
+    ],
+    "TargetType": "ip",
+    "VpcId": "vpc-0cf24f44982bd3e77"
+   },
+   "Metadata": {
+    "aws:cdk:path": "WebHostingStack/hello-app-target-group/Resource"
+   }
+  },
+  "myDist9DB766F3": {
+   "Type": "AWS::CloudFront::Distribution",
+   "Properties": {
+    "DistributionConfig": {
+     "Aliases": [
+      "dev.celeryfinance.com"
+     ],
+     "DefaultCacheBehavior": {
+      "CachePolicyId": "658327ea-f89d-4fab-a63d-7e88639e58f6",
+      "Compress": true,
+      "OriginRequestPolicyId": "216adef6-5c7f-47e4-b989-5492eafa07d3",
+      "TargetOriginId": "WebHostingStackmyDistOrigin1D3EA5B2C",
+      "ViewerProtocolPolicy": "redirect-to-https"
+     },
+     "Enabled": true,
+     "HttpVersion": "http2",
+     "IPV6Enabled": true,
+     "Logging": {
+      "Bucket": {
+       "Fn::Join": [
+        "",
+        [
+         {
+          "Fn::Select": [
+           0,
+           {
+            "Fn::Split": [
+             "/",
+             {
+              "Fn::Select": [
+               5,
+               {
+                "Fn::Split": [
+                 ":",
+                 {
+                  "Fn::ImportValue": "hello-s3-access-log-bucket-arn-export"
+                 }
+                ]
+               }
+              ]
+             }
+            ]
+           }
+          ]
+         },
+         ".s3.us-east-1.amazonaws.com"
+        ]
+       ]
+      },
+      "Prefix": "cloudfront/us-east-1"
+     },
+     "Origins": [
+      {
+       "CustomOriginConfig": {
+        "OriginProtocolPolicy": "https-only",
+        "OriginSSLProtocols": [
+         "TLSv1.2"
+        ]
+       },
+       "DomainName": {
+        "Fn::GetAtt": [
+         "helloalb87F56C9C",
+         "DNSName"
+        ]
+       },
+       "Id": "WebHostingStackmyDistOrigin1D3EA5B2C"
+      }
+     ],
+     "ViewerCertificate": {
+      "AcmCertificateArn": {
+       "Fn::ImportValue": "hello-cert-arn-export"
+      },
+      "MinimumProtocolVersion": "TLSv1.2_2021",
+      "SslSupportMethod": "sni-only"
+     }
+    },
+    "Tags": [
+     {
+      "Key": "BusinessLine",
+      "Value": "Murphy"
+     }
+    ]
+   },
+   "Metadata": {
+    "aws:cdk:path": "WebHostingStack/myDist/Resource"
+   }
+  },
+  "helloarecordC8F46A8B": {
+   "Type": "AWS::Route53::RecordSet",
+   "Properties": {
+    "AliasTarget": {
+     "DNSName": {
+      "Fn::GetAtt": [
+       "myDist9DB766F3",
+       "DomainName"
+      ]
+     },
+     "HostedZoneId": {
+      "Fn::FindInMap": [
+       "AWSCloudFrontPartitionHostedZoneIdMap",
+       {
+        "Ref": "AWS::Partition"
+       },
+       "zoneId"
+      ]
+     }
+    },
+    "HostedZoneId": "Z0305651MAJXD6KEX7QH",
+    "Name": "dev.celeryfinance.com.",
+    "Type": "A"
+   },
+   "Metadata": {
+    "aws:cdk:path": "WebHostingStack/hello-a-record/Resource"
+   }
+  },
+  "CDKMetadata": {
+   "Type": "AWS::CDK::Metadata",
+   "Properties": {
+    "Analytics": "v2:deflate64:H4sIAAAAAAAA/31Sy07DMBD8Fu6uoa1AXGkrEFKRUNo72jqbaBvXjvwoqiL/O5u4qQIHTp6dGTszqyzkfPEkH+7g289U2cw0HWS3C6AawdRX55dyFVWDYQUeBaoFq6iio3B5cza2Yl2Z/4l3Uzv0Pgltay+7ra1vvhEnfpiltY4+oOuVEb6CqyHgHnyzwYoMBbKmN/xlrAlABt2Eu97doTuTwpxrgEkQnGRXWD2ww/lpNalLP2bEkTT4QEpbKA+gwSgy9Znrv7QtG6D/xJa11aDl1L/mqY+4jLl6RjzR95wUw20tkzEJDhDLynE/2W34rqNDHJcwnZNgf8DHJScsUFlXDt0GtMOQkijQ2+jyJj6gbblPtmQ6CWNLlEd/f54/y/6fOHqimYsm0Allkc8fDA/T3TACAAA="
+   },
+   "Metadata": {
+    "aws:cdk:path": "WebHostingStack/CDKMetadata/Default"
+   }
+  }
+ },
+ "Mappings": {
+  "AWSCloudFrontPartitionHostedZoneIdMap": {
+   "aws": {
+    "zoneId": "Z2FDTNDATAQYW2"
+   },
+   "aws-cn": {
+    "zoneId": "Z3RFFRIM2A3IF5"
+   }
+  }
+ },
+ "Parameters": {
+  "BootstrapVersion": {
+   "Type": "AWS::SSM::Parameter::Value<String>",
+   "Default": "/cdk-bootstrap/hnb659fds/version",
+   "Description": "Version of the CDK Bootstrap resources in this environment, automatically retrieved from SSM Parameter Store. [cdk:skip]"
+  }
+ },
+ "Rules": {
+  "CheckBootstrapVersion": {
+   "Assertions": [
+    {
+     "Assert": {
+      "Fn::Not": [
+       {
+        "Fn::Contains": [
+         [
+          "1",
+          "2",
+          "3",
+          "4",
+          "5"
+         ],
+         {
+          "Ref": "BootstrapVersion"
+         }
+        ]
+       }
+      ]
+     },
+     "AssertDescription": "CDK bootstrap stack version 6 required. Please run 'cdk bootstrap' with a recent version of the CDK CLI."
+    }
+   ]
+  }
+ }
+}

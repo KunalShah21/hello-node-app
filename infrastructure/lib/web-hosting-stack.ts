@@ -192,6 +192,7 @@ export class WebHostingStack extends Stack {
     // add an ALB listener that listens on HTTPS and send straffic to the target group
     const listener = appLoadBalancer.addListener("hello-alb-listener", {
       certificates: [acmCertRef],
+      defaultTargetGroups: [appTargetGroup],
       open: true,
       port: 443,
       sslPolicy: SslPolicy.RECOMMENDED_TLS,

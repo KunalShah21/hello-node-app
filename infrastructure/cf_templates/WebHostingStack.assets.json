@@ -1,0 +1,20 @@
+{
+  "version": "36.0.0",
+  "files": {
+    "6cf11c6a9444931da525da6b4b3128b75982da10ffe71532df3b92b71390a785": {
+      "source": {
+        "path": "WebHostingStack.template.json",
+        "packaging": "file"
+      },
+      "destinations": {
+        "565731953403-us-east-1": {
+          "bucketName": "cdk-hnb659fds-assets-565731953403-us-east-1",
+          "objectKey": "6cf11c6a9444931da525da6b4b3128b75982da10ffe71532df3b92b71390a785.json",
+          "region": "us-east-1",
+          "assumeRoleArn": "arn:${AWS::Partition}:iam::565731953403:role/cdk-hnb659fds-file-publishing-role-565731953403-us-east-1"
+        }
+      }
+    }
+  },
+  "dockerImages": {}
+}
