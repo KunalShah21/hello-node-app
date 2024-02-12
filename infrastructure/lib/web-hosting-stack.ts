@@ -192,7 +192,6 @@ export class WebHostingStack extends Stack {
     // add an ALB listener that listens on HTTPS and send straffic to the target group
     const listener = appLoadBalancer.addListener("hello-alb-listener", {
       certificates: [acmCertRef],
-      defaultTargetGroups: [appTargetGroup],
       open: true,
       port: 443,
       sslPolicy: SslPolicy.RECOMMENDED_TLS,
@@ -206,7 +205,7 @@ export class WebHostingStack extends Stack {
       defaultBehavior: {
         origin: new LoadBalancerV2Origin(appLoadBalancer, {
           protocolPolicy: OriginProtocolPolicy.HTTPS_ONLY,
-          customHeaders: {"restrict-access": "true"}
+          // customHeaders: {"restrict-access": "true"} this works to restrict ALB traffic to only the CF Dist but could not configure the rule condition with CDK for the ALB
         }),
         viewerProtocolPolicy: ViewerProtocolPolicy.REDIRECT_TO_HTTPS,
         originRequestPolicy: OriginRequestPolicy.ALL_VIEWER
