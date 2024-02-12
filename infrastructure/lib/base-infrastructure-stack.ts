@@ -1,12 +1,19 @@
-import { Stack, StackProps, CfnOutput, Duration } from "aws-cdk-lib";
-import { Vpc, SubnetType, IpAddresses } from "aws-cdk-lib/aws-ec2";
-import { PublicHostedZone } from "aws-cdk-lib/aws-route53";
+import { CfnOutput, Duration, Stack, StackProps, Tags } from "aws-cdk-lib";
 import { Certificate, CertificateValidation } from "aws-cdk-lib/aws-certificatemanager";
+import { SubnetType, Vpc } from "aws-cdk-lib/aws-ec2";
+import {
+  AccountRootPrincipal,
+  ArnPrincipal,
+  Effect,
+  PolicyDocument,
+  PolicyStatement,
+  ServicePrincipal,
+} from "aws-cdk-lib/aws-iam";
 import { Key } from "aws-cdk-lib/aws-kms";
-import { PolicyDocument, PolicyStatement, AccountRootPrincipal, Effect, ServicePrincipal } from "aws-cdk-lib/aws-iam";
+import { PublicHostedZone } from "aws-cdk-lib/aws-route53";
 
-import { Construct } from "constructs";
 import { BlockPublicAccess, Bucket, BucketAccessControl, BucketEncryption, StorageClass } from "aws-cdk-lib/aws-s3";
+import { Construct } from "constructs";
 // import * as sqs from 'aws-cdk-lib/aws-sqs';
 
 export class BaseInfrastructureStack extends Stack {
@@ -43,6 +50,11 @@ export class BaseInfrastructureStack extends Stack {
       enableDnsHostnames: true,
       enableDnsSupport: true,
     });
+    // adding a tag to easily lookup VPC in the web-hosting-stack during cdk synth
+    // cdk cannot resolve the value of the vpc id via CF export since it doesn't exist yet and the reference function
+    // cannot work with a Token (unresolved value)
+    //https://github.com/aws/aws-cdk/issues/3600
+    Tags.of(vpc).add(this.node.tryGetContext("vpc-tag-name"), "true");
 
     // get hosted zone information
     const hostedZoneId = globalContext["hosted-zone-id"];
@@ -60,8 +72,17 @@ export class BaseInfrastructureStack extends Stack {
       validation: CertificateValidation.fromDns(hostedZone),
     });
 
-    // create KMS Key for cloudwatch
+    // create KMS Key for cloudwatch and ensure it allows cloudwatch to use the key to write logs
     const cloudWatchKey = this.createKMSKey(this, "CloudWatch", globalContext);
+    cloudWatchKey.addToResourcePolicy(
+      new PolicyStatement({
+        sid: "Allow access logs to be written",
+        actions: ["kms:Encrypt*", "kms:Decrypt*", "kms:ReEncrypt*", "kms:GenerateDataKey*", "kms:Describe*"],
+        effect: Effect.ALLOW,
+        principals: [new ServicePrincipal(`logs.${region}.amazonaws.com`)],
+        resources: ["*"],
+      })
+    );
 
     // create KMS key for S3 and ensure it allows services to write logs even though it is encrypted
     const s3Key = this.createKMSKey(this, "S3", globalContext);
@@ -179,7 +200,7 @@ export class BaseInfrastructureStack extends Stack {
             sid: "Allow use of the key",
             actions: ["kms:Encrypt", "kms:Decrypt", "kms:ReEncrypt*", "kms:GenerateDataKey*", "kms:DescribeKey"],
             effect: Effect.ALLOW,
-            principals: [globalContext["aws-sso-power-user-arn"], new AccountRootPrincipal()],
+            principals: [new ArnPrincipal(globalContext["aws-sso-power-user-arn"]), new AccountRootPrincipal()],
             resources: ["*"],
           }),
           // allow the account and sso power user to use the key with AWS services
@@ -187,7 +208,7 @@ export class BaseInfrastructureStack extends Stack {
             sid: "Allow attachment of persistent resources",
             actions: ["kms:CreateGrant", "kms:ListGrants", "kms:RevokeGrant"],
             effect: Effect.ALLOW,
-            principals: [globalContext["aws-sso-power-user-arn"], new AccountRootPrincipal()],
+            principals: [new ArnPrincipal(globalContext["aws-sso-power-user-arn"]), new AccountRootPrincipal()],
             resources: ["*"],
             conditions: {
               Bool: {

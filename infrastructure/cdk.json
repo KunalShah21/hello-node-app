@@ -58,6 +58,7 @@
     "@aws-cdk/aws-cloudwatch-actions:changeLambdaPermissionLogicalIdForLambdaAction": true,
 
     "vpc-id-export-name": "hello-vpc-id-export",
+    "vpc-tag-name": "hello-vpc",
     "cloudwatch-kms-key-arn-export-name": "hello-cloudwatch-kms-key-arn-export",
     "s3-kms-key-arn-export-name": "hello-s3-kms-key-arn-export",
     "acm-cert-arn-export-name": "hello-cert-arn-export",

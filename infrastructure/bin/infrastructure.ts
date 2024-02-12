@@ -1,6 +1,6 @@
 #!/usr/bin/env node
-import "source-map-support/register";
 import { App, Tags } from "aws-cdk-lib";
+import "source-map-support/register";
 import { BaseInfrastructureStack } from "../lib/base-infrastructure-stack";
 import { WebHostingStack } from "../lib/web-hosting-stack";
 

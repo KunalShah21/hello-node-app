@@ -20,6 +20,8 @@ echo "CDK_DEFAULT_REGION = $CDK_DEFAULT_REGION"
 echo "CDK_DEFAULT_ACCOUNT = $CDK_DEFAULT_ACCOUNT"
 echo "ENVIRONMENT = $ENVIRONMENT"
 
-cdk synth --role "arn:aws:iam::${CDK_DEFAULT_ACCOUNT}:role/czero-cdk-deployment-role" --profile $2
+cdk synth BaseInfrastructureStack --role "arn:aws:iam::${CDK_DEFAULT_ACCOUNT}:role/czero-cdk-deployment-role" --profile $2 --debug
+cdk deploy BaseInfrastructureStack --role "arn:aws:iam::${CDK_DEFAULT_ACCOUNT}:role/czero-cdk-deployment-role" --profile $2 --debug
 
-# cdk deploy --role "arn:aws:iam::${CDK_DEFAULT_ACCOUNT}:role/czero-cdk-deployment-role" --profile $2
+cdk synth WebHostingStack --role "arn:aws:iam::${CDK_DEFAULT_ACCOUNT}:role/czero-cdk-deployment-role" --profile $2 --debug
+cdk deploy WebHostingStack --role "arn:aws:iam::${CDK_DEFAULT_ACCOUNT}:role/czero-cdk-deployment-role" --profile $2 --debug
