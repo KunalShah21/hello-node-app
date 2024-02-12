@@ -1,11 +1,12 @@
-import { Stack, StackProps, CfnOutput } from "aws-cdk-lib";
+import { Stack, StackProps, CfnOutput, Duration } from "aws-cdk-lib";
 import { Vpc, SubnetType, IpAddresses } from "aws-cdk-lib/aws-ec2";
 import { PublicHostedZone } from "aws-cdk-lib/aws-route53";
 import { Certificate, CertificateValidation } from "aws-cdk-lib/aws-certificatemanager";
 import { Key } from "aws-cdk-lib/aws-kms";
-import { PolicyDocument, PolicyStatement, AccountRootPrincipal, Effect } from "aws-cdk-lib/aws-iam";
+import { PolicyDocument, PolicyStatement, AccountRootPrincipal, Effect, ServicePrincipal } from "aws-cdk-lib/aws-iam";
 
 import { Construct } from "constructs";
+import { BlockPublicAccess, Bucket, BucketAccessControl, BucketEncryption, StorageClass } from "aws-cdk-lib/aws-s3";
 // import * as sqs from 'aws-cdk-lib/aws-sqs';
 
 export class BaseInfrastructureStack extends Stack {
@@ -59,7 +60,49 @@ export class BaseInfrastructureStack extends Stack {
       validation: CertificateValidation.fromDns(hostedZone),
     });
 
+    // create KMS Key for cloudwatch
     const cloudWatchKey = this.createKMSKey(this, "CloudWatch", globalContext);
+
+    // create KMS key for S3
+    const s3Key = this.createKMSKey(this, "S3", globalContext);
+
+    // create s3 buckets for access logs
+    // will transition to S3 IA after 30 days
+    // will transition to Glacier after 90 days
+    const accessLogBucket = new Bucket(this, "hello-logging-bucket", {
+      blockPublicAccess: BlockPublicAccess.BLOCK_ALL,
+      accessControl: BucketAccessControl.BUCKET_OWNER_FULL_CONTROL,
+      encryption: BucketEncryption.KMS,
+      encryptionKey: s3Key,
+      versioned: false, // access logs do not need to be versioned
+      lifecycleRules: [
+        {
+          id: "Store Access Logs in IA and Glacier",
+          enabled: true,
+          transitions: [
+            { storageClass: StorageClass.INFREQUENT_ACCESS, transitionAfter: Duration.days(30) },
+            { storageClass: StorageClass.GLACIER, transitionAfter: Duration.days(90) },
+          ],
+        },
+      ],
+    });
+    // add a bucket policy statement that allows AWS to store s3 access logs into the bucket
+    accessLogBucket.addToResourcePolicy(
+      new PolicyStatement({
+        actions: ["s3:PutObject"],
+        resources: [`${accessLogBucket.bucketArn}/*`],
+        principals: [new ServicePrincipal("logging.s3.amazonaws.com")],
+      })
+    );
+
+    // add a bucket policy statement that allows AWS to store ALB access logs into the bucket
+    accessLogBucket.addToResourcePolicy(
+      new PolicyStatement({
+        actions: ["s3:PutObject"],
+        resources: [`${accessLogBucket.bucketArn}/*`],
+        principals: [new AccountRootPrincipal()],
+      })
+    );
 
     // create a CloudFormation output for the VPC Id
     new CfnOutput(this, "hello-vpc-id-export", {
@@ -87,10 +130,12 @@ export class BaseInfrastructureStack extends Stack {
    * @returns KMS Key construct
    */
   createKMSKey(stack: Stack, awsService: string, globalContext: any): Key {
+    const awsServiceLC = awsService.toLowerCase();
+
     // create a KMS key
-    const kmsKey = new Key(stack, `hello-app-${awsService}-kms-cm-key`, {
-      alias: `aws-${awsService}-kms-cm-key`,
-      description: `KMS Key for ${awsService}`,
+    const kmsKey = new Key(stack, `hello-app-${awsServiceLC}-kms-cm-key`, {
+      alias: `aws-${awsServiceLC}-kms-cm-key`,
+      description: `KMS Key for ${awsServiceLC}`,
       enableKeyRotation: true,
       policy: new PolicyDocument({
         statements: [
@@ -127,11 +172,11 @@ export class BaseInfrastructureStack extends Stack {
       }),
     });
 
-    new CfnOutput(stack, `hello-app-${awsService}-kms-cm-key-arn-export`, {
-      exportName: stack.node.tryGetContext("cloudwatch-kms-key-arn-export-name"),
+    new CfnOutput(stack, `hello-app-${awsServiceLC}-kms-cm-key-arn-export`, {
+      exportName: `hello-${awsServiceLC}-kms-key-arn-export`,
       value: kmsKey.keyArn,
     });
 
-    return kmsKey
+    return kmsKey;
   }
 }
