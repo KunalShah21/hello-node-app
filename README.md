@@ -62,13 +62,37 @@ The infrastructure diagram can be found under ./Hello World Node App Infrastruct
 
 ## Infrastructure - Future Considerations
 
-* Add alarms surrounding ECS
-    * [https://docs.aws.amazon.com/AmazonECS/latest/developerguide/cloudwatch-metrics.html](https://docs.aws.amazon.com/AmazonECS/latest/developerguide/cloudwatch-metrics.html)
-* Add alarms surrounding ALB
-    * [https://docs.aws.amazon.com/elasticloadbalancing/latest/application/load-balancer-cloudwatch-metrics.html](https://docs.aws.amazon.com/elasticloadbalancing/latest/application/load-balancer-cloudwatch-metrics.html)
-* Add alarms surrounding CloudFront
-    * [https://docs.aws.amazon.com/AmazonCloudFront/latest/DeveloperGuide/monitoring-using-cloudwatch.html](https://docs.aws.amazon.com/AmazonCloudFront/latest/DeveloperGuide/monitoring-using-cloudwatch.html)
-* Resolve the issue with ALB access logs
+### ECS Alarms
+
+Thresholds would be found after continued monitoring via CloudWatch Dashboards.
+
+These alarms would trigger an SNS Topic to send an email to relevant engineers/operations.
+
+[https://docs.aws.amazon.com/AmazonECS/latest/developerguide/cloudwatch-metrics.html](https://docs.aws.amazon.com/AmazonECS/latest/developerguide/cloudwatch-metrics.html)
+
+| **Metric** | **Statistic** | **Period** | **Threshold** | **Description** |
+| --- | --- | --- | --- | --- |
+| CPUUtilization | Average | Some period of time | Some threshold | Ensure there is enough CPU allocated for the container to avoid performance degradation |
+| MemoryUtilization | Average | Some period of time | Some threshold | Ensure there is enough memory allocated for the container to avoid performance degradation |
+
+### ALB Alarms
+
+Thresholds would be found after continued monitoring via CloudWatch Dashboards.
+
+These alarms would trigger an SNS Topic to send an email to relevant engineers/operations.
+
+[https://docs.aws.amazon.com/elasticloadbalancing/latest/application/load-balancer-cloudwatch-metrics.html](https://docs.aws.amazon.com/elasticloadbalancing/latest/application/load-balancer-cloudwatch-metrics.html)
+
+| **Metric** | **Statistic** | **Period** | **Threshold** | **Description** |
+| --- | --- | --- | --- | --- |
+| HTTPCode_ELB_4XX_Count | Sum | Some period of time | Some threshold | Errors originating from the ALB |
+| HTTPCode_ELB_5XX_Count | Sum | Some period of time | Some threshold | Errors originating from the ALB |
+| HTTPCode_Target_4XX_Count | Sum | Some period of time | Some threshold | Errors originating from the target (ECS) |
+| HTTPCode_Target_5XX_Count | Sum | Some period of time | Some threshold | Errors originating from the target (ECS) |
+
+### ALB Access Logs
+
+Resolve the issue with ALB access logs
 
 ## Application - Image
 
